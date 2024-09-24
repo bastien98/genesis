@@ -1,15 +1,17 @@
 import os
 from typing import List
 
+from langchain_core.documents import Document
+from langchain_core.language_models import BaseChatModel
+from langchain_core.prompts import PromptTemplate
+from langchain_text_splitters import MarkdownHeaderTextSplitter
 from llama_index.core import SimpleDirectoryReader
-from llama_index.core.node_parser import MarkdownNodeParser
-from llama_index.core.schema import Document, BaseNode
 from llama_parse import LlamaParse
 
 
-def parse_pdf_file_to_documents(file_path: str) -> List[Document]:
+def parse_pdf_file_to_document(file_path: str) -> Document:
     """
-        Parse a PDF file into a list of Document objects using LlamaParse.
+        Parse a PDF file into a(langchain) Document with source metadata.
 
         Args:
             file_path (str): Path to the PDF file.
@@ -26,7 +28,11 @@ def parse_pdf_file_to_documents(file_path: str) -> List[Document]:
     file_extractor = {".pdf": parser}
     documents = SimpleDirectoryReader(input_files=[file_path],
                                       file_extractor=file_extractor).load_data()
-    return documents
+
+    combined_content = "".join(doc.page_content for doc in documents)
+    metadata = {"source": file_path}
+
+    return Document(page_content=combined_content, metadata=metadata)
 
 
 def save_documents_as_markdown(documents: List[Document], output_dir: str, filename: str) -> None:
@@ -59,19 +65,41 @@ def save_documents_as_markdown(documents: List[Document], output_dir: str, filen
     print(f"Saved {len(documents)} documents as '{filename}' in {output_dir}")
 
 
-def parse_markdown_to_nodes(file_path: str) -> List[BaseNode]:
-    """
-        Parse a Markdown file into LlamaIndex BaseNodes using MarkdownNodeParser defaults.
-
-        Args:
-            file_path (str): Path to the Markdown file.
-
-        Returns:
-            List[BaseNode]: Parsed segments of the Markdown document.
-        """
+def read_markdown_file(file_path: str) -> str:
     with open(file_path, 'r', encoding='utf-8') as file:
         content = file.read()
+    return content
 
-    markdown_parser = MarkdownNodeParser()
-    nodes = markdown_parser.get_nodes_from_documents([Document(text=content)])
-    return nodes
+
+def parse_markdown_to_chunks(md_content: str) -> List[Document]:
+    """Will return chuncks that maintain hiarchical structure"""
+    headers_to_split_on = [
+        ("#", "Header 1"),
+        ("##", "Header 2"),
+        ("###", "Header 3"),
+    ]
+    markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on, strip_headers=False)
+    chunks = markdown_splitter.split_text(md_content)
+    return chunks
+
+
+def get_chunk_context(whole_document: Document, chunk: Document, model: BaseChatModel) -> str:
+    """For the moment to exepensive to pass whole doucment for every to retrieve summarization, possible with prompt caching in the
+        see:  https://www.anthropic.com/news/contextual-retrieval
+        """
+    prompt_template = PromptTemplate(
+        input_variables=["WHOLE_DOCUMENT", "CHUNK_CONTENT"],
+        template="""
+    <document> {WHOLE_DOCUMENT} </document>
+    Here is the chunk we want to situate within the whole document
+    <chunk> {CHUNK_CONTENT} </chunk>
+    Please give a short succinct context to situate this chunk within the overall document for the purposes of improving search retrieval of the chunk. Answer only with the succinct context and nothing else.
+    """
+    )
+
+    formatted_prompt = prompt_template.format(
+        WHOLE_DOCUMENT=whole_document.page_content,
+        CHUNK_CONTENT=chunk.page_content
+    )
+    context = model.invoke(formatted_prompt)
+    return context.content
