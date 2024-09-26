@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
 
-from file_api.core.domain.ex_document import ExDocument
+from langchain_core.documents import Document
 
 
 class FileStoragePort(ABC):
     @abstractmethod
-    async def save_document_to_raw(self, file: ExDocument) -> str:
+    async def save_raw_document(self, file: bytes, file_name: str) -> str:
         pass
