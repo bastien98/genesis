@@ -1,9 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Any
+
+from file_api.core.domain.ex_document import ExDocument
 
 
 class FileStoragePort(ABC):
     @abstractmethod
-    async def save_file(self, file: Any, file_name: str, path: str) -> str:
-        """Save a file to a given path. Returns the full path to the file."""
+    async def save_document_to_raw(self, file: ExDocument) -> str:
         pass
