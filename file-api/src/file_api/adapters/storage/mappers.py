@@ -5,9 +5,8 @@ from fastapi import UploadFile
 from langchain_core.documents import Document
 
 
-async def uploadFile_mapper(file: UploadFile, source: str) -> Document:
-    contents = await file.read()
-    reader = PyPDF2.PdfReader(BytesIO(contents))
+async def file_content_mapper(self, file: bytes, source: str) -> Document:
+    reader = PyPDF2.PdfReader(BytesIO(file))
 
     full_text = ""
     # Iterate over all the pages in the PDF

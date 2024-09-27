@@ -2,6 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from file_api.api.v1 import router as v1
 from file_api.config import APP_VERSION, APP_NAME
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(title=APP_NAME)
 app.include_router(v1)
