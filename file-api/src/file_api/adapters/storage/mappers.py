@@ -1,7 +1,6 @@
 from io import BytesIO
 
 import PyPDF2
-from fastapi import UploadFile
 from langchain_core.documents import Document
 
 
