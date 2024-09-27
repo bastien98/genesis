@@ -26,7 +26,7 @@ class FileStorageService:
         raw_location, _ = await asyncio.gather(save_raw_task, parse_raw_task)
 
         # Proceed to step 3
-        clean_document = await self.file_parser.parse_to_clean_document(raw_location)
+        clean_document = await self.file_parser.parse_to_clean_document(content, filename)
 
         # Run steps 4 and 5 concurrently
         save_clean_task = asyncio.create_task(
