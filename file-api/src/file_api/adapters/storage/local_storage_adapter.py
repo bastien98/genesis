@@ -4,18 +4,20 @@ from pathlib import Path
 import aiofiles
 from langchain_core.documents import Document
 
-from file_api.core.ports.file_storage_port import FileStoragePort, FileLocation
+from file_api.core.domain.file_location import DirectoryLocation
+from file_api.core.ports.file_storage_port import FileStoragePort, DocumentLocation
+from file_api.adapters.parsers.pdf_parser import PdfParser
 
 
 class LocalFileStorageAdapter(FileStoragePort):
 
-    def calculate_clean_output_location(self, filename: str) -> FileLocation:
+    def calculate_clean_output_location(self, filename: str) -> DocumentLocation:
         clean_source = (Path(os.getcwd()) / "../../../data/processed/markdown").resolve()
-        return FileLocation(source=str(clean_source), filename=str(Path(filename).with_suffix(".md")))
+        return DocumentLocation(source=str(clean_source), filename=str(Path(filename).with_suffix(".md")))
 
-    def _calculate_raw_output_location(self, filename: str) -> FileLocation:
+    def _calculate_raw_output_location(self, filename: str) -> DocumentLocation:
         source = (Path(os.getcwd()) / "../../../data/raw/pdf").resolve()
-        return FileLocation(source=str(source), filename=filename)
+        return DocumentLocation(source=str(source), filename=filename)
 
     async def save_raw_content(self, file: bytes, filename: str) -> None:
         raw_location = self._calculate_raw_output_location(filename)
@@ -26,3 +28,14 @@ class LocalFileStorageAdapter(FileStoragePort):
         clean_file_location = self.calculate_clean_output_location(filename)
         with open(str(clean_file_location.full_path), 'w', encoding='utf-8') as f:
             f.write(document.page_content)
+
+    async def read_documents(self, location: DirectoryLocation) -> list[Document]:
+        directory_path = Path(location.source)
+        documents = []
+        for file_path in directory_path.iterdir():
+            if file_path.is_file():
+                async with aiofiles.open(file_path, mode='r', encoding='utf-8') as f:
+                    content = await f.read()
+                    documents.append(Document(page_content=content))
+
+        return documents

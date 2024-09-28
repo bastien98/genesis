@@ -17,6 +17,7 @@ async def upload(
         file_content = await file.read()
         chunks = await file_service.process(file_content, file.filename)
         embeddings = await embeddings_service.create_embeddings(chunks)
+        return {"message": "File uploaded and processed successfully.", "filename": file.filename}
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))

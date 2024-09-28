@@ -2,7 +2,7 @@ from langchain_core.documents import Document
 from llama_parse import LlamaParse
 
 from file_api.core.ports.file_parser_port import FileParserPort
-from file_api.core.ports.file_storage_port import FileLocation
+from file_api.core.ports.file_storage_port import DocumentLocation
 
 
 class LlamaParser(FileParserPort):
