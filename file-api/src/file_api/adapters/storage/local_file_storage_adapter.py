@@ -41,8 +41,6 @@ class LocalFileStorageAdapter(FileStoragePort):
 
         return documents
 
-
-
     async def save_BM25_index(self, index: BM25Okapi, filename: str) -> None:
         with open(self._get_index_m25_location().full_path, 'wb') as f:
             pickle.dump(index, f)
