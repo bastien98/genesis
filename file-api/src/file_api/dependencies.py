@@ -10,7 +10,6 @@ from file_api.core.services.embeddings_service import EmbeddingsService
 from file_api.core.services.file_service import FileStorageService
 from file_api.core.services.kb_service import KBService
 from langchain_openai import OpenAIEmbeddings
-from langchain_ollama import OllamaEmbeddings
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -31,20 +30,18 @@ except json.JSONDecodeError:
 
 # Check which model to use and set EMBEDDINGS_MODEL accordingly
 if Model.OPENAI in embeddings_model:
-    EMBEDDINGS_MODEL = embeddings_model[Model.OPENAI]
-    VECTOR_DB_EMBEDDINGS_MODEL = OpenAIEmbeddings(model=EMBEDDINGS_MODEL)
-    embeddings_client = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
-    print(f"using the OpenAI embeddings model: {EMBEDDINGS_MODEL}")
+    EMBEDDINGS_MODEL_STR = embeddings_model[Model.OPENAI]
+    embeddings_client = OpenAIEmbeddingsClient(OpenAIEmbeddings(model=EMBEDDINGS_MODEL_STR))
+    print(f"using the OpenAI embeddings model: {EMBEDDINGS_MODEL_STR}")
 elif Model.OLLAMA in embeddings_model:
-    EMBEDDINGS_MODEL = embeddings_model[Model.OLLAMA]
-    VECTOR_DB_EMBEDDINGS_MODEL = OllamaEmbeddings(model=EMBEDDINGS_MODEL)
+    EMBEDDINGS_MODEL_STR = embeddings_model[Model.OLLAMA]
     raise NotImplementedError("The 'embeddings_client' for Ollama embeddings is not implemented yet. Please implement "
                               "the client functionality.")
 else:
-    EMBEDDINGS_MODEL = embeddings_model[Model.OPENAI]
-    VECTOR_DB_EMBEDDINGS_MODEL = OpenAIEmbeddings(model=EMBEDDINGS_MODEL)
-    embeddings_client = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
-    print(f"Defaulting to OpenAI embeddings model: {EMBEDDINGS_MODEL}")
+    EMBEDDINGS_MODEL_STR = embeddings_model[Model.OPENAI]
+    embeddings_client = OpenAIEmbeddingsClient(OpenAIEmbeddings(model=EMBEDDINGS_MODEL_STR))
+    print(f"Defaulting to OpenAI embeddings model: {EMBEDDINGS_MODEL_STR}")
+
 
 file_storage_adapter = LocalFileStorageAdapter()
 
