@@ -6,7 +6,7 @@ from rank_bm25 import BM25Okapi
 
 class FileStoragePort(ABC):
     @abstractmethod
-    def _get_raw_output_location(self, filename: str) -> DocumentLocation:
+    def _get_raw_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
         pass
 
     @abstractmethod
@@ -14,7 +14,7 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    async def save_raw_content(self, content: bytes, filename: str) -> None:
+    async def save_raw_content(self, content: bytes, filename: str, kb_id: str) -> None:
         pass
 
     @abstractmethod

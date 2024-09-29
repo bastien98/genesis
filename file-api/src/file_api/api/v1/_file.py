@@ -16,7 +16,7 @@ async def upload(
     try:
         filename = file.filename
         file_content = await file.read()
-        chunks = await file_service.process(file_content, filename)
+        chunks = await file_service.process(file_content, filename, "test")
         await kb_service.update(filename, chunks, "test")
         return {"message": "File uploaded and processed successfully.", "filename": file.filename}
 

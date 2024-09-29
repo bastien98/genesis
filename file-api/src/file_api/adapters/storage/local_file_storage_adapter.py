@@ -16,12 +16,12 @@ class LocalFileStorageAdapter(FileStoragePort):
         clean_source = (Path(os.getcwd()) / "../../../data/processed/markdown").resolve()
         return DocumentLocation(source=str(clean_source), filename=str(Path(filename).with_suffix(".md")))
 
-    def _get_raw_output_location(self, filename: str) -> DocumentLocation:
-        source = (Path(os.getcwd()) / "../../../data/raw/pdf").resolve()
+    def _get_raw_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+        source = (Path(os.getcwd()) / "../../../data/raw" / kb_id / "pdf").resolve()
         return DocumentLocation(source=str(source), filename=filename)
 
-    async def save_raw_content(self, file: bytes, filename: str) -> None:
-        raw_location = self._get_raw_output_location(filename)
+    async def save_raw_content(self, file: bytes, filename: str, kb_id) -> None:
+        raw_location = self._get_raw_output_location(filename, kb_id)
         async with aiofiles.open(str(raw_location.full_path), 'wb') as out_file:
             await out_file.write(file)
 

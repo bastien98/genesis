@@ -11,8 +11,8 @@ class FileStorageService:
         self.file_parser = file_parser
         self.chunker = chunker
 
-    async def process(self, content: bytes, filename: str) -> list[Document]:
-        await self.file_storage.save_raw_content(content, filename)
+    async def process(self, content: bytes, filename: str, kb_id: str) -> list[Document]:
+        await self.file_storage.save_raw_content(content, filename, kb_id)
         clean_document = await self.file_parser.parse_to_clean_document(content, filename)
         await self.file_storage.save_clean_document(clean_document, filename)
         chunks = await self.chunker.chunk_document(clean_document)
