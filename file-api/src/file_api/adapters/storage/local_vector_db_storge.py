@@ -1,8 +1,6 @@
 import uuid
 from typing import Union
-
 from chromadb import AsyncHttpClient as ChromaClient
-from file_api.core.domain.embeddings_model import Embeddings
 from file_api.core.ports.vector_db_port import VectorDbPort
 import chromadb.utils.embedding_functions as embedding_functions
 from langchain_core.documents import Document
