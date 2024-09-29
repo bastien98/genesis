@@ -1,16 +1,17 @@
 from abc import ABC, abstractmethod
 from langchain_core.documents import Document
-
 from file_api.core.domain.file_location import DocumentLocation, DirectoryLocation
+from rank_bm25 import BM25Okapi
+
 
 
 class FileStoragePort(ABC):
     @abstractmethod
-    def _calculate_raw_output_location(self, filename: str) -> DocumentLocation:
+    def _get_raw_output_location(self, filename: str) -> DocumentLocation:
         pass
 
     @abstractmethod
-    def calculate_clean_output_location(self, filename: str) -> DocumentLocation:
+    def get_clean_output_location(self, filename: str) -> DocumentLocation:
         pass
 
     @abstractmethod
@@ -22,5 +23,9 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    async def read_documents(self, location: DirectoryLocation) -> list[Document]:
+    async def read_directory(self, location: DirectoryLocation) -> list[Document]:
+        pass
+
+    @abstractmethod
+    async def save_BM25_index(self, index: BM25Okapi, filename: str) -> None:
         pass
