@@ -17,6 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/health")
 async def check_health() -> dict[str, str]:
     """Liveness check for the chat-api."""
