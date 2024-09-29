@@ -15,7 +15,7 @@ class LocalChromaDbAdapter(VectorDbPort):
 
     async def save_chunks(self, chunks: list[Document], kb_id: str) -> None:
         chroma_ef = embedding_functions.create_langchain_embedding(self.model)
-        collection = self.aclient.create_collection(name="test", embedding_function=chroma_ef)
+        collection = self.aclient.create_collection(name=kb_id, embedding_function=chroma_ef)
         # collection = self.aclient.get_collection(name=kb_id, embedding_function=chroma_ef)
         chunks_text = [chunk.page_content for chunk in chunks]
         chunk_ids = [str(uuid.uuid4()) for _ in chunks_text]
