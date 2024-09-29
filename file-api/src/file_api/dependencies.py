@@ -6,7 +6,6 @@ from file_api.adapters.parsers.llama_parser import LlamaParser
 from file_api.adapters.storage.local_file_storage_adapter import LocalFileStorageAdapter
 from file_api.adapters.storage.local_vector_db_storge import LocalChromaDbAdapter
 from file_api.core.domain.chunkers import HeaderChunker
-from file_api.core.domain.embeddings_model import Embeddings
 from file_api.core.domain.indexing import bm25_simple
 from file_api.core.services.embeddings_service import EmbeddingsService
 from file_api.core.services.file_service import FileStorageService

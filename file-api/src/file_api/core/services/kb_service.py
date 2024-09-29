@@ -1,4 +1,3 @@
-from file_api.core.domain.embeddings_model import Embeddings
 from file_api.core.ports.file_storage_port import FileStoragePort
 from file_api.core.ports.indexing_port import BM25IndexingStrategy
 from file_api.core.ports.vector_db_port import VectorDbPort
@@ -11,9 +10,9 @@ class KBService:
         self.create_bm25_index = bm25_index_creator
         self.vector_db = vector_db
 
-    async def update(self, filename: str, chunks: list[Document], vector_db_index: str) -> None:
+    async def update(self, filename: str, chunks: list[Document], kb_id: str) -> None:
         await self._update_BM25_index(filename)
-        await self._add_to_vector_db(chunks, vector_db_index)
+        await self._add_to_vector_db(chunks, kb_id)
 
     async def _update_BM25_index(self, filename: str) -> None:
         documents = await self.file_storage.read_directory(

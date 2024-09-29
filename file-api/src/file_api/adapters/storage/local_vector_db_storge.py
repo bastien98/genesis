@@ -13,19 +13,10 @@ class LocalChromaDbAdapter(VectorDbPort):
         self.aclient = aclient
         self.model = model
 
-    async def save_chunks(self, chunks: list[Document], vector_db_index: str) -> None:
-        """
-        Saves all chunks of a document into the specified vector database index.
-
-        Args:
-            chunks (list[Document]): The list of document chunks to be saved.
-            vector_db_index (str): The index in the vector database where the chunks will be stored.
-
-        Returns:
-            None
-        """
+    async def save_chunks(self, chunks: list[Document], kb_id: str) -> None:
         chroma_ef = embedding_functions.create_langchain_embedding(self.model)
-        collection = self.aclient.get_collection(name=vector_db_index, embedding_function=chroma_ef)
+        collection = self.aclient.create_collection(name="test", embedding_function=chroma_ef)
+        # collection = self.aclient.get_collection(name=kb_id, embedding_function=chroma_ef)
         chunks_text = [chunk.page_content for chunk in chunks]
         chunk_ids = [str(uuid.uuid4()) for _ in chunks_text]
         # You can store chunks with associated metadata (e.g., source document, page number) if you want to track the origin or location of each chunk

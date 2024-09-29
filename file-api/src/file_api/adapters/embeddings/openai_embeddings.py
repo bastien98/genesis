@@ -1,5 +1,3 @@
-from typing import Union
-
 from langchain_core.documents import Document
 from file_api.core.domain.embeddings_model import Embeddings
 from file_api.core.ports.embeddings_port import EmbeddingsPort

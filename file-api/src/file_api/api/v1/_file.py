@@ -1,6 +1,4 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-
-from file_api.core.services.embeddings_service import EmbeddingsService
 from file_api.core.services.file_service import FileStorageService
 from file_api.core.services.kb_service import KBService
 from file_api.dependencies import get_file_service, get_kb_service

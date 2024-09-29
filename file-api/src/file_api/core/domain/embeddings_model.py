@@ -1,9 +1,9 @@
 from typing import Union
-
 from langchain_openai import OpenAIEmbeddings
 from langchain_ollama import OllamaEmbeddings
-# To support new models add them to the model field!
 
+
+# To support new models add them to the model field!
 class Embeddings:
     def __init__(self, embeddings: list[list[float]], model: Union[OpenAIEmbeddings, OllamaEmbeddings]):
         self._embeddings = embeddings

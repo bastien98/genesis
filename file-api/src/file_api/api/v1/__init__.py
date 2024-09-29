@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-
 from ._file import router as file
 
 
