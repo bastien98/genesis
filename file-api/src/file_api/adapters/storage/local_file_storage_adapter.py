@@ -12,21 +12,25 @@ from file_api.core.ports.file_storage_port import FileStoragePort, DocumentLocat
 class LocalFileStorageAdapter(FileStoragePort):
     BM25_INDEX_FILENAME = "knowledge_base.pkl"
 
-    def get_clean_output_location(self, filename: str) -> DocumentLocation:
-        clean_source = (Path(os.getcwd()) / "../../../data/processed/markdown").resolve()
+    def get_clean_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+        clean_source = (self._get_kb_location(kb_id).source / "markdown").resolve()
         return DocumentLocation(source=str(clean_source), filename=str(Path(filename).with_suffix(".md")))
 
     def _get_raw_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
         source = (Path(os.getcwd()) / "../../../data/raw" / kb_id / "pdf").resolve()
         return DocumentLocation(source=str(source), filename=filename)
 
+    def _get_kb_location(self, kb_id: str) -> DirectoryLocation:
+        source = (Path(os.getcwd()) / "../../../data/processed" / kb_id).resolve()
+        return DirectoryLocation(source=str(source))
+
     async def save_raw_content(self, file: bytes, filename: str, kb_id) -> None:
-        raw_location = self._get_raw_output_location(filename, kb_id)
-        async with aiofiles.open(str(raw_location.full_path), 'wb') as out_file:
+        raw_location = self._get_raw_output_location(filename, kb_id).full_path
+        async with aiofiles.open(str(raw_location), 'wb') as out_file:
             await out_file.write(file)
 
-    async def save_clean_document(self, document: Document, filename: str) -> None:
-        clean_file_location = self.get_clean_output_location(filename)
+    async def save_clean_document(self, document: Document, filename: str, kb_id: str) -> None:
+        clean_file_location = self.get_clean_output_location(filename, kb_id)
         with open(str(clean_file_location.full_path), 'w', encoding='utf-8') as f:
             f.write(document.page_content)
 
@@ -41,10 +45,10 @@ class LocalFileStorageAdapter(FileStoragePort):
 
         return documents
 
-    async def save_BM25_index(self, index: BM25Okapi, filename: str) -> None:
-        with open(self._get_index_m25_location().full_path, 'wb') as f:
+    async def save_BM25_index(self, index: BM25Okapi, filename: str, kb_id: str) -> None:
+        with open(self._get_index_m25_location(kb_id).full_path, 'wb') as f:
             pickle.dump(index, f)
 
-    def _get_index_m25_location(self) -> DocumentLocation:
-        index_source = (Path(os.getcwd()) / "../../../data/processed/bm25_index").resolve()
+    def _get_index_m25_location(self, kb_id: str) -> DocumentLocation:
+        index_source = (self._get_kb_location(kb_id).source / "bm25_index").resolve()
         return DocumentLocation(source=str(index_source), filename=self.BM25_INDEX_FILENAME)

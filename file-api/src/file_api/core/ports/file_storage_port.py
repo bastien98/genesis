@@ -10,7 +10,11 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    def get_clean_output_location(self, filename: str) -> DocumentLocation:
+    def get_clean_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+        pass
+
+    @abstractmethod
+    def _get_kb_location(self, kb_id: str) -> DirectoryLocation:
         pass
 
     @abstractmethod
@@ -18,7 +22,7 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    async def save_clean_document(self, document: Document, filename: str) -> None:
+    async def save_clean_document(self, document: Document, filename: str, kb_id: str) -> None:
         pass
 
     @abstractmethod
@@ -26,5 +30,9 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    async def save_BM25_index(self, index: BM25Okapi, filename: str) -> None:
+    async def save_BM25_index(self, index: BM25Okapi, filename: str, kb_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def _get_index_m25_location(self, kb_id: str) -> DocumentLocation:
         pass

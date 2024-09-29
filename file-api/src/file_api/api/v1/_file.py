@@ -14,10 +14,11 @@ async def upload(
         kb_service: KBService = Depends(get_kb_service)
 ):
     try:
+        kb_id = "test-2"
         filename = file.filename
         file_content = await file.read()
-        chunks = await file_service.process(file_content, filename, "test")
-        await kb_service.update(filename, chunks, "test")
+        chunks = await file_service.process(file_content, filename, kb_id)
+        await kb_service.update(filename, chunks, kb_id)
         return {"message": "File uploaded and processed successfully.", "filename": file.filename}
 
     except ValueError as e:
