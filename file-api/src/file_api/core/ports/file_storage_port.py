@@ -4,7 +4,6 @@ from file_api.core.domain.file_location import DocumentLocation, DirectoryLocati
 from rank_bm25 import BM25Okapi
 
 
-
 class FileStoragePort(ABC):
     @abstractmethod
     def _get_raw_output_location(self, filename: str) -> DocumentLocation:
