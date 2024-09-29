@@ -4,6 +4,7 @@ from enum import StrEnum
 from file_api.adapters.embeddings.openai_embeddings import OpenAIEmbeddingsClient
 from file_api.adapters.parsers.llama_parser import LlamaParser
 from file_api.adapters.storage.local_file_storage_adapter import LocalFileStorageAdapter
+from file_api.adapters.storage.local_vector_db_storge import LocalChromaDbAdapter
 from file_api.core.domain.chunkers import HeaderChunker
 from file_api.core.domain.indexing import bm25_simple
 from file_api.core.services.embeddings_service import EmbeddingsService
@@ -11,6 +12,7 @@ from file_api.core.services.file_service import FileStorageService
 from file_api.core.services.kb_service import KBService
 from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
+import chromadb
 
 load_dotenv()
 
@@ -42,7 +44,6 @@ else:
     embeddings_client = OpenAIEmbeddingsClient(OpenAIEmbeddings(model=EMBEDDINGS_MODEL_STR))
     print(f"Defaulting to OpenAI embeddings model: {EMBEDDINGS_MODEL_STR}")
 
-
 file_storage_adapter = LocalFileStorageAdapter()
 
 
@@ -54,5 +55,9 @@ def get_embeddings_service() -> EmbeddingsService:
     return EmbeddingsService(embeddings_client)
 
 
+vector_db = LocalChromaDbAdapter(chromadb.PersistentClient(path="../../../data/processed/vector_db"))
+
+
 def get_kb_service() -> KBService:
-    return KBService(file_storage_adapter, bm25_simple)
+    return KBService(file_storage_adapter, bm25_simple, vector_db)
+#

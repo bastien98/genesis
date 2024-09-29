@@ -20,7 +20,7 @@ async def upload(
         file_content = await file.read()
         chunks = await file_service.process(file_content, filename)
         embeddings = await embeddings_service.create_embeddings(chunks)
-        await kb_service.update(filename)
+        await kb_service.update(filename, embeddings, "test")
         return {"message": "File uploaded and processed successfully.", "filename": file.filename}
 
     except ValueError as e:
