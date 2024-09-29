@@ -12,6 +12,14 @@ class LocalChromaDbAdapter(VectorDbPort):
         )
 
     async def save_embeddings(self, embeddings: Embeddings, vector_db_index: str) -> None:
+        """
+        Saves the embeddings of all chunks of a document into the specified vector database (vectorDB) index.
+           Args:
+               embeddings (Embeddings): The embeddings to be saved, representing the document's chunked data.
+               vector_db_index (str): The index in the vector database where the embeddings will be stored.
+           Returns:
+            None
+       """
         # self.vector_db.get_or_create_collection(
         #     name=vector_db_index,  # The name of the collection you want to save to
         #     embedding_function=embedding_fn,
@@ -22,4 +30,5 @@ class LocalChromaDbAdapter(VectorDbPort):
         #     embeddings=embeddings,
         #     metadatas=metadata
         # )
-        pass
+
+    pass
