@@ -34,7 +34,7 @@ class LocalChromaDbAdapter(VectorDbPort):
         # You can store chunks with associated metadata (e.g., source document, page number) if you want to track the origin or location of each chunk
         collection.add(documents=chunks_text, ids=chunk_ids)
 
-    async def get_retriever(self, kb_id: str, k: int) -> VectorStoreRetriever:
+    async def get_vector_db_retriever(self, kb_id: str, k: int) -> VectorStoreRetriever:
         """ Retrieves a vector store retriever for a given knowledge base and returns the top-k most similar chunks. """
         return Chroma(
             client=self.aclient,

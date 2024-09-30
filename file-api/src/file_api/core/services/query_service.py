@@ -6,6 +6,6 @@ class ChatService:
         self._vector_db = vector_db
 
     async def process(self, query: str, kb_id: str) -> str:
-        vector_db_retriever = await self._vector_db.get_retriever(kb_id, 100)
+        vector_db_retriever = await self._vector_db.get_vector_db_retriever(kb_id, 100)
         vector_db_retriever.invoke(query)
         return "ok"
