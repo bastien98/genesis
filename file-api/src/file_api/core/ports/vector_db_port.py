@@ -19,9 +19,12 @@ class VectorDbPort(ABC):
         pass
 
     @abstractmethod
-    async def get_vector_db_retriever(self, kb_id: str, k: int) -> VectorStoreRetriever:
+    async def similarity_search(self, query: str, kb_id: str, k: int) -> list[Document]:
         pass
 
+    @abstractmethod
+    async def similarity_search_with_score(self, query: str, kb_id: str, k: int) -> list[tuple[Document, float]]:
+        pass
 
     @abstractmethod
     def get_kb_document_count(self, kb_id: str) -> int:
