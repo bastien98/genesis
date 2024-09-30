@@ -44,3 +44,17 @@ class LocalChromaDbAdapter(VectorDbPort):
             search_type="similarity",
             search_kwargs={"k": k}
         )
+
+    async def get_vector_db_retriever_with_score(self, kb_id: str, k: int) -> VectorStoreRetriever:
+        """ Retrieves a vector store retriever for a given knowledge base and returns the top-k most similar chunks. """
+        return (Chroma(
+            client=self.aclient,
+            collection_name=kb_id,
+            embedding_function=self.embedding_function,
+        ).as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": k}
+        ))
+
+    def get_kb_document_count(self, kb_id: str) -> int:
+        return self.aclient.get_collection(name=kb_id, embedding_function=self.embedding_function).count()

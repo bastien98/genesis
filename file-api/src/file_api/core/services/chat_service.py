@@ -8,7 +8,8 @@ class ChatService:
         self._file_storage = file_storage
 
     async def process(self, query: str, kb_id: str) -> str:
-        vector_db_retriever = await self._vector_db.get_vector_db_retriever(kb_id, 100)
+        count = self._vector_db.get_kb_document_count(kb_id)
+        vector_db_retriever = await self._vector_db.get_vector_db_retriever(kb_id, count)
         BM25_index = await self._file_storage.get_BM25_index(kb_id)
         BM25_index.get_scores(query.split())
         return "ok"

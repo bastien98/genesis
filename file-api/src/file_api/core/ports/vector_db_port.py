@@ -21,3 +21,8 @@ class VectorDbPort(ABC):
     @abstractmethod
     async def get_vector_db_retriever(self, kb_id: str, k: int) -> VectorStoreRetriever:
         pass
+
+
+    @abstractmethod
+    def get_kb_document_count(self, kb_id: str) -> int:
+        pass
