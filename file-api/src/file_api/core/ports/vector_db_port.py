@@ -1,5 +1,8 @@
 from abc import ABC, abstractmethod
+
+from langchain_chroma import Chroma
 from langchain_core.documents import Document
+from langchain_core.vectorstores import VectorStoreRetriever
 
 
 class VectorDbPort(ABC):
@@ -15,4 +18,8 @@ class VectorDbPort(ABC):
         Returns:
             None
         """
+        pass
+
+    @abstractmethod
+    async def get_retriever(self, kb_id: str, k: int) -> VectorStoreRetriever:
         pass
