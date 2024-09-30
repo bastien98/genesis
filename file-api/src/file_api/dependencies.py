@@ -14,7 +14,7 @@ from langchain_openai import OpenAIEmbeddings
 from dotenv import load_dotenv
 import chromadb
 
-from file_api.core.services.query_service import ChatService
+from file_api.core.services.chat_service import ChatService
 
 load_dotenv()
 
@@ -62,8 +62,8 @@ vector_db = LocalChromaDbAdapter(chromadb.PersistentClient(path="../../../data/p
 
 
 def get_kb_service() -> KBService:
-    return KBService(file_storage_adapter, bm25_simple, vector_db)
+    return KBService(file_storage_adapter, bm25_simple, vector_db, HeaderChunker())
 
 
 def get_chat_service() -> ChatService:
-    return ChatService(vector_db)
+    return ChatService(vector_db, file_storage_adapter)

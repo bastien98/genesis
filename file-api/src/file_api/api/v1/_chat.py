@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Query, Form, Depends
 
-from file_api.core.services.query_service import ChatService
+from file_api.core.services.chat_service import ChatService
 from file_api.dependencies import get_chat_service
 
 router = APIRouter()

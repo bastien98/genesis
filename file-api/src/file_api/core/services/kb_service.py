@@ -1,3 +1,4 @@
+from file_api.core.ports.chunker_port import ChunkerPort
 from file_api.core.ports.file_storage_port import FileStoragePort
 from file_api.core.ports.indexing_port import BM25IndexingStrategy
 from file_api.core.ports.vector_db_port import VectorDbPort
@@ -5,10 +6,12 @@ from langchain_core.documents import Document
 
 
 class KBService:
-    def __init__(self, file_storage: FileStoragePort, bm25_index_creator: BM25IndexingStrategy, vector_db: VectorDbPort):
+    def __init__(self, file_storage: FileStoragePort, bm25_index_creator: BM25IndexingStrategy, vector_db: VectorDbPort,
+                 chunker: ChunkerPort):
         self.file_storage = file_storage
         self.create_bm25_index = bm25_index_creator
         self.vector_db = vector_db
+        self.chunker = chunker
 
     async def update(self, filename: str, chunks: list[Document], kb_id: str) -> None:
         await self._update_BM25_index(filename, kb_id)
@@ -17,8 +20,10 @@ class KBService:
     async def _update_BM25_index(self, filename: str, kb_id: str) -> None:
         documents = await self.file_storage.read_directory(
             self.file_storage.get_clean_output_location(filename, kb_id).get_directory_location)
-        bm25_index = self.create_bm25_index(documents)
-        await self.file_storage.save_BM25_index(bm25_index, filename, kb_id)
+
+        chunks = [chunk for document in documents for chunk in await self.chunker.chunk_document(document)]
+        bm25_index = self.create_bm25_index(chunks)
+        await self.file_storage.save_BM25_index(bm25_index, kb_id)
 
     async def _add_chunks_to_vector_db_kb(self, chunks: list[Document], kb_id: str) -> None:
         await self.vector_db.save_chunks(chunks, kb_id)

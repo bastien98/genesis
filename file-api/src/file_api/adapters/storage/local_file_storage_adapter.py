@@ -45,10 +45,24 @@ class LocalFileStorageAdapter(FileStoragePort):
 
         return documents
 
-    async def save_BM25_index(self, index: BM25Okapi, filename: str, kb_id: str) -> None:
+    async def save_BM25_index(self, index: BM25Okapi, kb_id: str) -> None:
         with open(self._get_index_m25_location(kb_id).full_path, 'wb') as f:
             pickle.dump(index, f)
 
     def _get_index_m25_location(self, kb_id: str) -> DocumentLocation:
         index_source = (self._get_kb_location(kb_id).source / "bm25_index").resolve()
         return DocumentLocation(source=str(index_source), filename=self.BM25_INDEX_FILENAME)
+
+    async def get_BM25_index(self, kb_id: str) -> BM25Okapi:
+        """Load the BM25 index from specified kb_id from storage and return the BM25Okapi object."""
+        # Get the BM25 index location
+        bm25_index_location = self._get_index_m25_location(kb_id)
+
+        # Load the BM25 index from the file
+        if bm25_index_location.full_path.exists():
+            with open(str(bm25_index_location.full_path), 'rb') as f:
+                bm25_index = pickle.load(f)
+                return bm25_index
+        else:
+            raise FileNotFoundError(f"BM25 index file for kb_id {kb_id} not found at {bm25_index_location.full_path}")
+

@@ -30,9 +30,13 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    async def save_BM25_index(self, index: BM25Okapi, filename: str, kb_id: str) -> None:
+    async def save_BM25_index(self, index: BM25Okapi, kb_id: str) -> None:
         pass
 
     @abstractmethod
     def _get_index_m25_location(self, kb_id: str) -> DocumentLocation:
+        pass
+
+    @abstractmethod
+    async def get_BM25_index(self, kb_id: str) -> BM25Okapi:
         pass

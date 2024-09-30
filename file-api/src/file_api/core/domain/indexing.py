@@ -1,3 +1,4 @@
+import itertools
 from typing import List
 from langchain_core.documents import Document
 from rank_bm25 import BM25Okapi
@@ -24,4 +25,5 @@ def bm25_simple(documents: List[Document]) -> BM25Okapi:
         BM25Okapi: A BM25 index for querying the tokenized documents.
     """
     tokenized_documents = [doc.page_content.split() for doc in documents]
+    # TODO: clean tokenized_document (worden zitten nu vol markdown syntax and ():;...)
     return BM25Okapi(tokenized_documents)
