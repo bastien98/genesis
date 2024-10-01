@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from file_api.core.services.file_service import FileStorageService
 from file_api.core.services.kb_service import KBService
@@ -15,10 +17,10 @@ async def upload(
         kb_service: KBService = Depends(get_kb_service),
 ):
     try:
-        filename = file.filename
+        filename = Path(file.filename).stem
         file_content = await file.read()
-        md_chunks, text_chunks  = await file_service.process(file_content, filename, kb_id)
-        await kb_service.update(filename, md_chunks, text_chunks, kb_id)
+        md_chunks = await file_service.process(file_content, filename, kb_id)
+        await kb_service.update(md_chunks, kb_id)
         return {"message": "File uploaded and processed successfully.", "filename": file.filename}
 
     except ValueError as e:

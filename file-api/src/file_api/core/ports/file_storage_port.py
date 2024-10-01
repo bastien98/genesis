@@ -14,7 +14,7 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    def get_BM25_index_location(self, kb_id: str) -> BM25Okapi:
+    def get_BM25_index_location(self, kb_id: str) -> DocumentLocation:
         pass
 
     @abstractmethod
@@ -44,3 +44,12 @@ class FileStoragePort(ABC):
     @abstractmethod
     def save_text_document(self, documents: Document, filename: str, kb_id: str) -> None:
         pass
+
+    @abstractmethod
+    def read_BM25_index(self, location: DocumentLocation) -> BM25Okapi:
+        pass
+
+    # @abstractmethod
+    # def create_BM25_index(self, kb_id: str) -> None:
+    #     pass
+

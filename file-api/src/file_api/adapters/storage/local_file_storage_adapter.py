@@ -1,5 +1,6 @@
 import os
 import pickle
+import typing
 from pathlib import Path
 import aiofiles
 from langchain_core.documents import Document
@@ -30,15 +31,15 @@ class LocalFileStorageAdapter(FileStoragePort):
 
     def get_markdown_location(self, filename: str, kb_id: str) -> DocumentLocation:
         markdown_source = (self.get_kb_files_location(kb_id).source / Path(filename).stem / "markdown").resolve()
-        return DocumentLocation(source=str(markdown_source), filename=str(Path(filename).with_suffix(".md")))
+        return DocumentLocation(source=str(markdown_source), filename=f"{filename}.md")
 
     def get_raw_location(self, filename: str, kb_id: str) -> DocumentLocation:
         raw_source = (self.get_kb_files_location(kb_id).source / Path(filename).stem / "raw").resolve()
-        return DocumentLocation(source=str(raw_source), filename=filename)
+        return DocumentLocation(source=str(raw_source), filename=f"{filename}.pdf")
 
     def get_text_location(self, filename: str, kb_id: str) -> DocumentLocation:
         text_source = (self.get_kb_files_location(kb_id).source / Path(filename).stem / "text").resolve()
-        return DocumentLocation(source=str(text_source), filename=str(Path(filename).with_suffix(".txt")))
+        return DocumentLocation(source=str(text_source), filename=f"{filename}.txt")
 
     # Save files to Document location methods
     def save_BM25_index(self, bm25_index: BM25Okapi, kb_id: str) -> None:
@@ -64,26 +65,28 @@ class LocalFileStorageAdapter(FileStoragePort):
             file.write(document.page_content)
             print(f"Document saved at {text_doc_location}")
 
-    async def read_text_directory(self, location: DirectoryLocation) -> list[Document]:
-        directory_path = location.source
-        documents = []
-        for file_path in directory_path.iterdir():
-            if file_path.is_file():
-                async with aiofiles.open(file_path, mode='r', encoding='utf-8') as f:
-                    content = await f.read()
-                    documents.append(Document(page_content=content))
-
-        return documents
-
-    async def get_BM25_index(self, kb_id: str) -> BM25Okapi:
+    def read_BM25_index(self, kb_id: str) -> BM25Okapi:
+        bm25_index_location = self.get_BM25_index_location(kb_id).full_path
         """Load the BM25 index from specified kb_id from storage and return the BM25Okapi object."""
-        # Get the BM25 index location
-        bm25_index_location = self._get_index_m25_location(kb_id)
+        with open(str(bm25_index_location), mode='rb') as f:
+            bm25_index = pickle.load(f)
+            return typing.cast(bm25_index, BM25Okapi)
 
-        # Load the BM25 index from the file
-        if bm25_index_location.full_path.exists():
-            with open(str(bm25_index_location.full_path), 'rb') as f:
-                bm25_index = pickle.load(f)
-                return bm25_index
-        else:
-            raise FileNotFoundError(f"BM25 index file for kb_id {kb_id} not found at {bm25_index_location.full_path}")
+    # def create_BM25_index(self, kb_id: str) -> None:
+    # TODO: implement this
+
+
+    #     text_doc = self.file_storage.read_text_dir(kb_id, filename)
+    #
+    #     # chunks = [chunk for document in documents for chunk in await self.chunker.chunk_document(document)]
+    #     # bm25_index = self.create_bm25_index(chunks)
+    #     # await self.file_storage.save_BM25_index(bm25_index, kb_id)
+    #     # pass
+    def _read_text_dir(self, kb_id: str, filename: str) -> Document:
+        # text_filepath = self.get_text_location(kb_id, filename).full_path
+        # with open(str(text_filepath), mode='r', encoding='utf-8') as f:
+        #     content = f.read()
+        #     return Document(page_content=content)
+        # TODO: read all text documents for all files
+        pass
+

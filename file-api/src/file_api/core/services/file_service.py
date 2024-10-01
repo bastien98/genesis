@@ -14,18 +14,18 @@ class FileStorageService:
         self.text_parser = text_parser
         self.chunker = chunker
 
-    async def process(self, content: bytes, filename: str, kb_id: str) -> tuple[list[Document], list[Document]]:
-        # save raw file
+    async def process(self, content: bytes, filename: str, kb_id: str) -> list[Document]:
+        # save content as raw file
         self.file_storage.save_raw_document(content, filename, kb_id)
-        # parse and save markdown file
+        # parse and save content as markdown file
         md_doc = await self.file_parser.parse_to_markdown_document(content, filename)
         self.file_storage.save_markdown_document(md_doc, filename, kb_id)
-        # parse and save text file
+        # parse and save content as text file
         text_doc = await self.text_parser.parse_to_text_document(content)
         self.file_storage.save_text_document(text_doc, filename, kb_id)
 
-        #create markdown and text chunks
+        # create md_chunks (kb_service will chunk all text files because you cannot append new chunks
+        # to an existing bm25 index
         md_chunks = await self.chunker.chunk_document(md_doc)
-        text_chunks = await self.chunker.chunk_document(text_doc)
 
-        return md_chunks, text_chunks
+        return md_chunks
