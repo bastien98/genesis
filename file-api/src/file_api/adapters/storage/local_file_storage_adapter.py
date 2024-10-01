@@ -14,9 +14,9 @@ class LocalFileStorageAdapter(FileStoragePort):
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
     PROCESSED_FILE_LOCATION = config.PROCESSED_FILE_LOCATION
 
-    def get_clean_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
-        clean_source = (self._get_kb_location(kb_id).source / Path(filename).stem / "markdown").resolve()
-        return DocumentLocation(source=str(clean_source), filename=str(Path(filename).with_suffix(".md")))
+    def get_markdown_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+        markdown_source = (self._get_kb_location(kb_id).source / Path(filename).stem / "markdown").resolve()
+        return DocumentLocation(source=str(markdown_source), filename=str(Path(filename).with_suffix(".md")))
 
     def _get_raw_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
         source = (Path(os.getcwd()) / self.PROCESSED_FILE_LOCATION / kb_id / Path(filename).stem / "raw").resolve()
@@ -31,9 +31,9 @@ class LocalFileStorageAdapter(FileStoragePort):
         async with aiofiles.open(str(raw_location), 'wb') as out_file:
             await out_file.write(file)
 
-    async def save_clean_document(self, document: Document, filename: str, kb_id: str) -> None:
-        clean_file_location = self.get_clean_output_location(filename, kb_id)
-        with open(str(clean_file_location.full_path), 'w', encoding='utf-8') as f:
+    async def save_markdown_document(self, document: Document, filename: str, kb_id: str) -> None:
+        markdown_file_location = self.get_markdown_output_location(filename, kb_id)
+        with open(str(markdown_file_location.full_path), 'w', encoding='utf-8') as f:
             f.write(document.page_content)
 
     async def read_directory(self, location: DirectoryLocation) -> list[Document]:
@@ -46,6 +46,17 @@ class LocalFileStorageAdapter(FileStoragePort):
                     documents.append(Document(page_content=content))
 
         return documents
+
+    def save_text_document(self, document: Document, filename: str, kb_id: str) -> None:
+        text_doc_location = self.get_text_document_location(filename, kb_id)
+        with open(str(text_doc_location.full_path), 'w') as file:
+            file.write(document.page_content)
+            print(f"Document saved at {text_doc_location.full_path}")
+
+    def get_text_document_location(self, filename: str, kb_id: str) -> DocumentLocation:
+        text_doc_location = (Path(os.getcwd()) / Path(config.PROCESSED_FILE_LOCATION) / kb_id / Path(
+            filename).stem / "text").resolve()
+        return DocumentLocation(source=str(text_doc_location), filename=filename)
 
     async def save_BM25_index(self, index: BM25Okapi, kb_id: str) -> None:
         with open(self._get_index_m25_location(kb_id).full_path, 'wb') as f:
@@ -67,4 +78,3 @@ class LocalFileStorageAdapter(FileStoragePort):
                 return bm25_index
         else:
             raise FileNotFoundError(f"BM25 index file for kb_id {kb_id} not found at {bm25_index_location.full_path}")
-

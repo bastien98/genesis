@@ -2,12 +2,12 @@ from langchain_core.documents import Document
 from llama_parse import LlamaParse
 
 from file_api.config import UNIQUE_PAGE_DELIMMETER
-from file_api.core.ports.file_parser_port import FileParserPort
+from file_api.core.ports.file_parser_port import MarkdownParserPort
 
 
-class LlamaParser(FileParserPort):
+class LlamaParser(MarkdownParserPort):
 
-    async def parse_to_clean_document(self, content: bytes, filename: str) -> Document:
+    async def parse_to_markdown_document(self, content: bytes, filename: str) -> Document:
         parser = LlamaParse(
             result_type="markdown"
         )

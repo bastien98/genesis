@@ -3,6 +3,7 @@ import os
 from enum import StrEnum
 from file_api.adapters.embeddings.openai_embeddings import OpenAIEmbeddingsClient
 from file_api.adapters.parsers.llama_parser import LlamaParser
+from file_api.adapters.parsers.pdf_parser import PdfParser
 from file_api.adapters.storage.local_file_storage_adapter import LocalFileStorageAdapter
 from file_api.adapters.storage.local_vector_db_storage import LocalChromaDbAdapter
 from file_api.core.domain.chunkers import HeaderChunker
@@ -54,7 +55,7 @@ chunker = HeaderChunker()
 
 
 def get_file_service() -> FileStorageService:
-    return FileStorageService(file_storage_adapter, LlamaParser(), chunker)
+    return FileStorageService(file_storage_adapter, LlamaParser(), PdfParser(), chunker)
 
 
 def get_embeddings_service() -> EmbeddingsService:

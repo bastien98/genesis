@@ -10,7 +10,7 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    def get_clean_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+    def get_markdown_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
         pass
 
     @abstractmethod
@@ -22,11 +22,15 @@ class FileStoragePort(ABC):
         pass
 
     @abstractmethod
-    async def save_clean_document(self, document: Document, filename: str, kb_id: str) -> None:
+    async def save_markdown_document(self, document: Document, filename: str, kb_id: str) -> None:
         pass
 
     @abstractmethod
     async def read_directory(self, location: DirectoryLocation) -> list[Document]:
+        pass
+
+    @abstractmethod
+    def save_text_document(self, documents: Document, filename: str, kb_id: str) -> None:
         pass
 
     @abstractmethod

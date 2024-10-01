@@ -12,7 +12,7 @@ async def upload(
         file: UploadFile = File(...),
         kb_id: str = Query(..., description="Knowledge Base ID"),
         file_service: FileStorageService = Depends(get_file_service),
-        kb_service: KBService = Depends(get_kb_service)
+        kb_service: KBService = Depends(get_kb_service),
 ):
     try:
         filename = file.filename

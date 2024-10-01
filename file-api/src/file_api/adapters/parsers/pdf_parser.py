@@ -1,10 +1,12 @@
 from io import BytesIO
-from file_api.core.ports.content_parser_port import ContentParserPort
 import PyPDF2
+from langchain_core.documents import Document
+
+from file_api.core.ports.file_parser_port import TextParserPort
 
 
-class PdfParser(ContentParserPort):
-    async def parse_to_text(self, content: bytes) -> str:
+class PdfParser(TextParserPort):
+    async def parse_to_text_document(self, content: bytes) -> Document:
         reader = PyPDF2.PdfReader(BytesIO(content))
         full_text = ""
         for page_number in range(len(reader.pages)):
@@ -12,4 +14,4 @@ class PdfParser(ContentParserPort):
             text = page.extract_text()
             full_text += text
 
-        return full_text.strip()
+        return Document(page_content=full_text)
