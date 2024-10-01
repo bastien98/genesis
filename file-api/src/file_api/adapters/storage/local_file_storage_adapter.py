@@ -2,7 +2,6 @@ import os
 import pickle
 import typing
 from pathlib import Path
-import aiofiles
 from langchain_core.documents import Document
 from rank_bm25 import BM25Okapi
 
