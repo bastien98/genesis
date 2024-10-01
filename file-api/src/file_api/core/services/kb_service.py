@@ -13,13 +13,13 @@ class KBService:
         self.vector_db = vector_db
         self.chunker = chunker
 
-    async def update(self, filename: str, chunks: list[Document], kb_id: str) -> None:
+    async def update(self, filename: str, md_chunks: list[Document], text_chunks: list[Document], kb_id: str) -> None:
         # await self._update_BM25_index(filename, kb_id)
-        await self._add_chunks_to_vector_db_kb(chunks, kb_id)
+        await self._add_chunks_to_vector_db_kb(md_chunks, kb_id)
 
     async def _update_BM25_index(self, filename: str, kb_id: str) -> None:
         documents = await self.file_storage.read_directory(
-            self.file_storage.get_markdown_output_location(filename, kb_id).get_directory_location)
+            self.file_storage.get_markdown_location(filename, kb_id).get_directory_location)
 
         chunks = [chunk for document in documents for chunk in await self.chunker.chunk_document(document)]
         bm25_index = self.create_bm25_index(chunks)

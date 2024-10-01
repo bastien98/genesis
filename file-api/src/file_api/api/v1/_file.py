@@ -17,8 +17,8 @@ async def upload(
     try:
         filename = file.filename
         file_content = await file.read()
-        chunks = await file_service.process(file_content, filename, kb_id)
-        await kb_service.update(filename, chunks, kb_id)
+        md_chunks, text_chunks  = await file_service.process(file_content, filename, kb_id)
+        await kb_service.update(filename, md_chunks, text_chunks, kb_id)
         return {"message": "File uploaded and processed successfully.", "filename": file.filename}
 
     except ValueError as e:

@@ -6,41 +6,41 @@ from rank_bm25 import BM25Okapi
 
 class FileStoragePort(ABC):
     @abstractmethod
-    def _get_raw_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+    def get_kb_location(self, kb_id: str) -> DirectoryLocation:
         pass
 
     @abstractmethod
-    def get_markdown_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
+    def get_kb_files_location(self, kb_id: str) -> DirectoryLocation:
         pass
 
     @abstractmethod
-    def _get_kb_location(self, kb_id: str) -> DirectoryLocation:
+    def get_BM25_index_location(self, kb_id: str) -> BM25Okapi:
         pass
 
     @abstractmethod
-    async def save_raw_content(self, content: bytes, filename: str, kb_id: str) -> None:
+    def get_markdown_location(self, filename: str, kb_id: str) -> DocumentLocation:
         pass
 
     @abstractmethod
-    async def save_markdown_document(self, document: Document, filename: str, kb_id: str) -> None:
+    def get_raw_location(self, filename: str, kb_id: str) -> DocumentLocation:
         pass
 
     @abstractmethod
-    async def read_directory(self, location: DirectoryLocation) -> list[Document]:
+    def get_text_location(self, filename: str, kb_id: str) -> DocumentLocation:
+        pass
+
+    @abstractmethod
+    def save_BM25_index(self, index: BM25Okapi, kb_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def save_markdown_document(self, document: Document, filename: str, kb_id: str) -> None:
+        pass
+
+    @abstractmethod
+    def save_raw_document(self, content: bytes, filename: str, kb_id: str) -> None:
         pass
 
     @abstractmethod
     def save_text_document(self, documents: Document, filename: str, kb_id: str) -> None:
-        pass
-
-    @abstractmethod
-    async def save_BM25_index(self, index: BM25Okapi, kb_id: str) -> None:
-        pass
-
-    @abstractmethod
-    def _get_index_m25_location(self, kb_id: str) -> DocumentLocation:
-        pass
-
-    @abstractmethod
-    async def get_BM25_index(self, kb_id: str) -> BM25Okapi:
         pass
