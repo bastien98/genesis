@@ -14,3 +14,10 @@ class HeaderChunker(ChunkerPort):
         markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on, strip_headers=False)
         chunks = markdown_splitter.split_text(document.page_content)
         return chunks
+
+
+class PageChunker(ChunkerPort):
+    async def chunk_document(self, document: Document) -> List[Document]:
+        chunks_str = document.page_content.split("UNIQUE_PAGE_DELIMITER_%^!@#$%%^")
+        chunks = [Document(page_content=chunk_str.strip()) for chunk_str in chunks_str if chunk_str.strip()]
+        return chunks

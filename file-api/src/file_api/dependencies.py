@@ -48,9 +48,11 @@ else:
 
 file_storage_adapter = LocalFileStorageAdapter()
 
+chunker = HeaderChunker()
+
 
 def get_file_service() -> FileStorageService:
-    return FileStorageService(file_storage_adapter, LlamaParser(), HeaderChunker())
+    return FileStorageService(file_storage_adapter, LlamaParser(), chunker)
 
 
 def get_embeddings_service() -> EmbeddingsService:
@@ -62,7 +64,7 @@ vector_db = LocalChromaDbAdapter(chromadb.PersistentClient(path="../../../data/p
 
 
 def get_kb_service() -> KBService:
-    return KBService(file_storage_adapter, bm25_simple, vector_db, HeaderChunker())
+    return KBService(file_storage_adapter, bm25_simple, vector_db, chunker)
 
 
 def get_chat_service() -> ChatService:
