@@ -11,6 +11,7 @@ from file_api.core.services.embeddings_service import EmbeddingsService
 from file_api.core.services.file_service import FileStorageService
 from file_api.core.services.kb_service import KBService
 from langchain_openai import OpenAIEmbeddings
+from langchain_ollama import OllamaEmbeddings
 from dotenv import load_dotenv
 import chromadb
 
@@ -27,24 +28,25 @@ class Model(StrEnum):
 # Default to OpenAI if MODEL is not defined or invalid
 model_env = os.getenv('MODEL', '{"openai": "text-embedding-ada-002"}')
 try:
-    embeddings_model = json.loads(model_env)
+    embeddings_model_env = json.loads(model_env)
 except json.JSONDecodeError:
     print(f"Invalid JSON format in MODEL environment variable: {model_env}. Defaulting to OpenAI.")
-    embeddings_model = {Model.OPENAI: "text-embedding-ada-002"}
+    embeddings_model_env = {Model.OPENAI: "text-embedding-ada-002"}
 
 # Check which model to use and set EMBEDDINGS_MODEL accordingly
-if Model.OPENAI in embeddings_model:
-    EMBEDDINGS_MODEL_STR = embeddings_model[Model.OPENAI]
-    embeddings_client = OpenAIEmbeddingsClient(OpenAIEmbeddings(model=EMBEDDINGS_MODEL_STR))
-    print(f"using the OpenAI embeddings model: {EMBEDDINGS_MODEL_STR}")
-elif Model.OLLAMA in embeddings_model:
-    EMBEDDINGS_MODEL_STR = embeddings_model[Model.OLLAMA]
+if Model.OPENAI in embeddings_model_env:
+    EMBEDDINGS_MODEL = OpenAIEmbeddings(model=embeddings_model_env[Model.OPENAI])
+    EMBEDDINGS_CLIENT = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
+    print(f"using the OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
+elif Model.OLLAMA in embeddings_model_env:
+    EMBEDDINGS_MODEL = OllamaEmbeddings(model=embeddings_model_env[Model.OLLAMA])
     raise NotImplementedError("The 'embeddings_client' for Ollama embeddings is not implemented yet. Please implement "
                               "the client functionality.")
 else:
-    EMBEDDINGS_MODEL_STR = embeddings_model[Model.OPENAI]
-    embeddings_client = OpenAIEmbeddingsClient(OpenAIEmbeddings(model=EMBEDDINGS_MODEL_STR))
-    print(f"Defaulting to OpenAI embeddings model: {EMBEDDINGS_MODEL_STR}")
+    EMBEDDINGS_MODEL = OpenAIEmbeddings(model=embeddings_model_env[Model.OPENAI])
+    EMBEDDINGS_CLIENT = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
+    print(
+        f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
 
 file_storage_adapter = LocalFileStorageAdapter()
 
@@ -56,16 +58,17 @@ def get_file_service() -> FileStorageService:
 
 
 def get_embeddings_service() -> EmbeddingsService:
-    return EmbeddingsService(embeddings_client)
+    return EmbeddingsService(EMBEDDINGS_CLIENT)
 
 
-vector_db = LocalChromaDbAdapter(chromadb.PersistentClient(path="../../../data/processed/vector_db"),
-                                 OpenAIEmbeddings())
+vector_db = LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
 
 
 def get_kb_service() -> KBService:
-    return KBService(file_storage_adapter, bm25_simple, vector_db, chunker)
+    return KBService(file_storage_adapter, bm25_simple,
+                     vector_db, chunker)
 
 
 def get_chat_service() -> ChatService:
-    return ChatService(vector_db, file_storage_adapter)
+    return ChatService(
+        vector_db, file_storage_adapter)

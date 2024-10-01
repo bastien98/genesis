@@ -8,6 +8,7 @@ class VectorDbPort(ABC):
     async def save_chunks(self, chunks: list[Document], kb_id: str) -> None:
         """
         Saves all chunks of a document into the specified vector database index.
+        Each index in the vector database maps directly to a kb_id.
 
         Args:
             chunks (list[Document]): The list of document chunks to be saved.

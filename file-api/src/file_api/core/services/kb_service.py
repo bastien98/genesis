@@ -14,7 +14,7 @@ class KBService:
         self.chunker = chunker
 
     async def update(self, filename: str, chunks: list[Document], kb_id: str) -> None:
-        await self._update_BM25_index(filename, kb_id)
+        # await self._update_BM25_index(filename, kb_id)
         await self._add_chunks_to_vector_db_kb(chunks, kb_id)
 
     async def _update_BM25_index(self, filename: str, kb_id: str) -> None:

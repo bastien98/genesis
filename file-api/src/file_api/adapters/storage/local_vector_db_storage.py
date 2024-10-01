@@ -1,10 +1,13 @@
 import uuid
 from typing import Union, List, Tuple
+
+import chromadb
 from chromadb import AsyncHttpClient as ChromaClient
 from chromadb.errors import InvalidCollectionException
 from langchain_chroma import Chroma
 from langchain_core.vectorstores import VectorStoreRetriever
 
+from file_api import config
 from file_api.core.ports.vector_db_port import VectorDbPort
 import chromadb.utils.embedding_functions as embedding_functions
 from langchain_core.documents import Document
@@ -16,6 +19,13 @@ class LocalChromaDbAdapter(VectorDbPort):
     def __init__(self, aclient: ChromaClient, model: Union[OpenAIEmbeddings, OllamaEmbeddings]):
         self.aclient = aclient
         self.embedding_function = embedding_functions.create_langchain_embedding(model)
+
+    @staticmethod
+    def create(embeddings_model: Union[OpenAIEmbeddings, OllamaEmbeddings]):
+        return LocalChromaDbAdapter(
+            chromadb.PersistentClient(path=f"{config.PROCESSED_FILE_LOCATION}/vector_db"),
+            embeddings_model
+        )
 
     async def save_chunks(self, chunks: list[Document], kb_id: str) -> None:
         try:

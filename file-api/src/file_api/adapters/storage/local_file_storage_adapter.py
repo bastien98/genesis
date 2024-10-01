@@ -5,23 +5,25 @@ import aiofiles
 from langchain_core.documents import Document
 from rank_bm25 import BM25Okapi
 
+from file_api import config
 from file_api.core.domain.file_location import DirectoryLocation
 from file_api.core.ports.file_storage_port import FileStoragePort, DocumentLocation
 
 
 class LocalFileStorageAdapter(FileStoragePort):
-    BM25_INDEX_FILENAME = "knowledge_base.pkl"
+    BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
+    PROCESSED_FILE_LOCATION = config.PROCESSED_FILE_LOCATION
 
     def get_clean_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
-        clean_source = (self._get_kb_location(kb_id).source / "markdown").resolve()
+        clean_source = (self._get_kb_location(kb_id).source / Path(filename).stem / "markdown").resolve()
         return DocumentLocation(source=str(clean_source), filename=str(Path(filename).with_suffix(".md")))
 
     def _get_raw_output_location(self, filename: str, kb_id: str) -> DocumentLocation:
-        source = (Path(os.getcwd()) / "../../../data/raw" / kb_id / "pdf").resolve()
+        source = (Path(os.getcwd()) / self.PROCESSED_FILE_LOCATION / kb_id / Path(filename).stem / "raw").resolve()
         return DocumentLocation(source=str(source), filename=filename)
 
     def _get_kb_location(self, kb_id: str) -> DirectoryLocation:
-        source = (Path(os.getcwd()) / "../../../data/processed" / kb_id).resolve()
+        source = (Path(os.getcwd()) / self.PROCESSED_FILE_LOCATION / kb_id).resolve()
         return DirectoryLocation(source=str(source))
 
     async def save_raw_content(self, file: bytes, filename: str, kb_id) -> None:
