@@ -8,4 +8,6 @@ class KbService:
 
     def add_doc_to_kb(self, username: str, kb_name: str, document: PdfDocument):
         user = self.users_repo.retrieve_user(username)
+        user.get_knowledge_base(kb_name).add_document(document)
+        self.users_repo.persist_user(user)
         print("")

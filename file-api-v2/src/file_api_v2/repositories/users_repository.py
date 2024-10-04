@@ -8,3 +8,6 @@ class UsersRepository:
 
     def retrieve_user(self, username: str) -> User:
         return self.users.retrieve_user(username)
+
+    def persist_user(self, user: User) -> None:
+        return self.users.update_user(user)
