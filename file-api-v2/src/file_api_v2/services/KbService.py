@@ -1,4 +1,4 @@
-from file_api_v2.domain.entities.documents import PdfDocument
+from file_api_v2.domain.entities.document import PdfDocument
 from file_api_v2.repositories.users_repository import UsersRepository
 
 

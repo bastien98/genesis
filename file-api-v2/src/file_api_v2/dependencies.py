@@ -4,7 +4,7 @@ from file_api_v2 import config
 from file_api_v2.repositories.users_repository import UsersRepository
 from file_api_v2.services.KbService import KbService
 from file_api_v2.services.document_manager import AbstractDocumentManager, LocalFileSystemDocumentManager
-from infra.mysql.adapters.user_adapter import UsersAdapter
+from infra.mysql.adapters.users_adapter import UsersAdapter
 from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
 
 

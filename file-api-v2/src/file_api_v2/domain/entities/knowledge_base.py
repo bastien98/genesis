@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 from typing import List
-from file_api_v2.domain.entities.documents import PdfDocument
+from file_api_v2.domain.entities.document import PdfDocument
 
 
 @dataclass

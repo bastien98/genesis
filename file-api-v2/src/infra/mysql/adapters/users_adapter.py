@@ -3,7 +3,7 @@ from sqlalchemy import Engine
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session, joinedload
 
-from file_api_v2.domain.entities.documents import PdfDocument
+from file_api_v2.domain.entities.document import PdfDocument
 from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
 from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.user_port import UsersPort
