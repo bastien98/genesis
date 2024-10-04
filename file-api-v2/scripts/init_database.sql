@@ -20,9 +20,9 @@ CREATE TABLE knowledge_base
 
 CREATE TABLE pdf_document
 (
+    doc_id           INT AUTO_INCREMENT,
     user_id          INT,
     kb_id            INT,
-    doc_id           INT,
     document_name    VARCHAR(255) NOT NULL,
     source           VARCHAR(255) NOT NULL,
     raw_location     VARCHAR(255) NOT NULL,

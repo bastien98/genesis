@@ -22,8 +22,8 @@ async def upload(
 ):
     try:
         document = PdfDocument(
-            user_id=user_id,
-            kb_id=kb_id,
+            username=user_id,
+            kb_name=kb_id,
             doc_id=str(file.filename),
             source="NA",
             document_manager=document_manager,
