@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from file_api_v2.domain.entities.KnowledgeBase import KnowledgeBase
+from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
 
 
 class KnowledgeBasePort(ABC):

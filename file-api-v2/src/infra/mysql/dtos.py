@@ -1,55 +1,41 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import declarative_base, relationship
+from sqlalchemy.orm import relationship, declarative_base
 
 Base = declarative_base()
 
 
-# User Model
 class UserDTO(Base):
-    __tablename__ = 'user'
+    __tablename__ = 'users'
 
     user_id = Column(Integer, primary_key=True, autoincrement=True)
     username = Column(String(255), nullable=False, unique=True)
 
-    knowledge_bases = relationship("KnowledgeBaseDTO", back_populates="user")
+    kbs = relationship("KnowledgeBaseDTO", back_populates="users", cascade="all, delete-orphan")
 
 
-# KnowledgeBase Model
 class KnowledgeBaseDTO(Base):
-    __tablename__ = 'knowledge_base'
+    __tablename__ = 'knowledge_bases'
 
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
     kb_id = Column(Integer, primary_key=True, autoincrement=True)
     kb_name = Column(String(255), nullable=False)
-    bm25_index_location = Column(String(255), nullable=False)
+    user_id = Column(Integer, ForeignKey('users.user_id', ondelete="CASCADE"), nullable=False)
 
-    user = relationship("UserDTO", back_populates="knowledge_bases")
-    pdf_documents = relationship(
-        "PdfDocumentDTO",
-        back_populates="knowledge_base",
-        primaryjoin="KnowledgeBaseDTO.kb_id == PdfDocumentDTO.kb_id"
-    )
+    users = relationship("UserDTO", back_populates="kbs")
 
-    __table_args__ = (
-        UniqueConstraint('user_id', 'kb_id', name='uq_user_kb'),
-    )
+    docs = relationship("PdfDocumentDTO", back_populates="knowledge_bases", cascade="all, delete-orphan")
+
+    __table_args__ = (UniqueConstraint('user_id', 'kb_name', name='unique_user_kb_name'),)
 
 
-# PdfDocument Model
 class PdfDocumentDTO(Base):
-    __tablename__ = 'pdf_document'
+    __tablename__ = 'raw_documents'
 
     doc_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('knowledge_base.user_id'), nullable=False)
-    kb_id = Column(Integer, ForeignKey('knowledge_base.kb_id'), nullable=False)
+    kb_id = Column(Integer, ForeignKey('knowledge_bases.kb_id', ondelete="CASCADE"), nullable=False)
     document_name = Column(String(255), nullable=False)
     source = Column(String(255), nullable=False)
-    raw_location = Column(String(255), nullable=False)
-    chunked_location = Column(String(255), nullable=False)
+    doc_path = Column(String(255), nullable=False)
 
-    knowledge_base = relationship("KnowledgeBaseDTO", back_populates="pdf_documents",
-                                  primaryjoin="PdfDocumentDTO.kb_id == KnowledgeBaseDTO.kb_id")
+    knowledge_bases = relationship("KnowledgeBaseDTO", back_populates="docs")
 
-    __table_args__ = (
-        UniqueConstraint('user_id', 'kb_id', 'doc_id', name='uq_user_kb_doc'),
-    )
+    __table_args__ = (UniqueConstraint('kb_id', 'document_name', name='unique_kb_doc_name'),)

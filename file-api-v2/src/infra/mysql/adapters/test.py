@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 
 from file_api_v2.domain.entities.documents import PdfDocument
-from file_api_v2.utills.document_manager import LocalFileSystemDocumentManager
+from file_api_v2.services.document_manager import LocalFileSystemDocumentManager
 from infra.mysql.adapters.knowledge_base_adapter import KnowledgeBaseAdapter
 
 engine = create_engine("mysql+mysqlconnector://root:Gilles1998@localhost/superRag")
