@@ -19,11 +19,11 @@ async def upload(
     try:
         content = await document.read()
         doc_name = document.filename
-        doc_path = document_manager.saveRAW(content, doc_name, username, kb_name)
+        raw_doc_path = document_manager.saveRAW(content, doc_name, username, kb_name)
         document = Document(
             doc_name=doc_name,
             source="NA",
-            raw_doc_path=doc_path,
+            raw_doc_path=raw_doc_path,
             clean_doc_path="NA"
         )
         kb_service.add_doc_to_kb(username, kb_name, document)

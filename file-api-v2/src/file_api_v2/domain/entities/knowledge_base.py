@@ -9,6 +9,5 @@ class KnowledgeBase:
     docs: List[Document] = field(default_factory=list)
 
     def add_document(self, document: Document) -> None:
-        """Adds a new PdfDocument to the knowledge base."""
         self.docs.append(document)
-        print(f"Document '{document.doc_name}' added to Knowledge Base '{self.kb_name}'")
+        print(f"Document '{document.doc_name}' added to raw_docs in Knowledge Base '{self.kb_name}'")
