@@ -7,7 +7,7 @@ from file_api_v2.domain.entities.document import PdfDocument
 from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
 from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.user_port import UsersPort
-from infra.mysql.dtos import UserDTO, KnowledgeBaseDTO, PdfDocumentDTO
+from infra.mysql.dtos import UserDTO, KnowledgeBaseDTO, DocumentDto
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -127,7 +127,7 @@ class UsersAdapter(UsersPort):
         # Keep track of documents to remove
         docs_to_remove = set(existing_docs_dict.keys())
 
-        for doc in kb.docs:
+        for doc in kb.raw_docs:
             logger.debug("Processing Document: %s", doc.doc_name)
             docs_to_remove.discard(doc.doc_name)
             if doc.doc_name in existing_docs_dict:
@@ -137,10 +137,10 @@ class UsersAdapter(UsersPort):
                 self._update_doc_dto(doc_dto, doc)
             else:
                 # Add new document
-                doc_dto = PdfDocumentDTO(
+                doc_dto = DocumentDto(
                     document_name=doc.doc_name,
                     source=doc.source,
-                    doc_path=doc.doc_path,
+                    raw_doc_path=doc.doc_path,
                     kb_id=kb_dto.kb_id
                 )
                 kb_dto.docs.append(doc_dto)
@@ -153,11 +153,11 @@ class UsersAdapter(UsersPort):
             kb_dto.docs.remove(doc_dto)
             session.delete(doc_dto)
 
-    def _update_doc_dto(self, doc_dto: PdfDocumentDTO, doc: PdfDocument):
+    def _update_doc_dto(self, doc_dto: DocumentDto, doc: PdfDocument):
         """Update PdfDocumentDTO fields."""
         logger.debug("Updating PdfDocumentDTO: %s", doc_dto.document_name)
         doc_dto.source = doc.source
-        doc_dto.doc_path = doc.doc_path
+        doc_dto.raw_doc_path = doc.doc_path
         # Update other fields if necessary
 
     def _map_user_dto_to_domain(self, user_dto: UserDTO) -> User:
@@ -168,11 +168,11 @@ class UsersAdapter(UsersPort):
             kbs=[
                 KnowledgeBase(
                     kb_name=kb.kb_name,
-                    docs=[
+                    raw_docs=[
                         PdfDocument(
                             doc_name=doc.document_name,
                             source=doc.source,
-                            doc_path=doc.doc_path
+                            doc_path=doc.raw_doc_path
                         )
                         for doc in kb.docs
                     ]

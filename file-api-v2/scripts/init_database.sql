@@ -16,13 +16,13 @@ CREATE TABLE knowledge_bases
     INDEX (user_id)
 );
 
-CREATE TABLE raw_documents
+CREATE TABLE documents
 (
     doc_id           INT AUTO_INCREMENT,
     kb_id            INT NOT NULL,
     document_name    VARCHAR(255) NOT NULL,
     source           VARCHAR(255) NOT NULL,
-    doc_path         VARCHAR(255) NOT NULL,
+    raw_doc_path         VARCHAR(255) NOT NULL,
     PRIMARY KEY (doc_id),
     FOREIGN KEY (kb_id) REFERENCES knowledge_bases (kb_id),
     CONSTRAINT unique_kb_doc_name UNIQUE (kb_id, document_name),
@@ -40,4 +40,4 @@ VALUES (1, 1, 'kb-test');
 
 select * from knowledge_bases;
 select * from users;
-select * from raw_documents;
+select * from documents;

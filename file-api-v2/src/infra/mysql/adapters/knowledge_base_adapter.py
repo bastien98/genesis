@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
 from file_api_v2.domain.entities.document import PdfDocument
 from file_api_v2.ports.knowledge_base_port import KnowledgeBasePort
-from infra.mysql.dtos import KnowledgeBaseDTO, PdfDocumentDTO
+from infra.mysql.dtos import KnowledgeBaseDTO, DocumentDto
 
 
 class KnowledgeBaseAdapter(KnowledgeBasePort):

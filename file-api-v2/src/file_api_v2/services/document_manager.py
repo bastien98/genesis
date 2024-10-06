@@ -1,10 +1,6 @@
 import os
 from abc import abstractmethod
 from pathlib import Path
-from typing import BinaryIO
-
-from fastapi import UploadFile
-
 from file_api_v2.ports.storage_port import StoragePort
 
 

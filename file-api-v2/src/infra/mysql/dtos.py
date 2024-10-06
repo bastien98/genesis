@@ -22,19 +22,19 @@ class KnowledgeBaseDTO(Base):
 
     users = relationship("UserDTO", back_populates="kbs")
 
-    docs = relationship("PdfDocumentDTO", back_populates="knowledge_bases", cascade="all, delete-orphan")
+    docs = relationship("DocumentDto", back_populates="knowledge_bases", cascade="all, delete-orphan")
 
     __table_args__ = (UniqueConstraint('user_id', 'kb_name', name='unique_user_kb_name'),)
 
 
-class PdfDocumentDTO(Base):
-    __tablename__ = 'raw_documents'
+class DocumentDto(Base):
+    __tablename__ = 'documents'
 
     doc_id = Column(Integer, primary_key=True, autoincrement=True)
     kb_id = Column(Integer, ForeignKey('knowledge_bases.kb_id', ondelete="CASCADE"), nullable=False)
     document_name = Column(String(255), nullable=False)
     source = Column(String(255), nullable=False)
-    doc_path = Column(String(255), nullable=False)
+    raw_doc_path = Column(String(255), nullable=False)
 
     knowledge_bases = relationship("KnowledgeBaseDTO", back_populates="docs")
 
