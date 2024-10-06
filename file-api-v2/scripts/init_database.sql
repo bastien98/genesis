@@ -7,9 +7,9 @@ CREATE TABLE users
 
 CREATE TABLE knowledge_bases
 (
-    kb_id               INT AUTO_INCREMENT,
-    user_id             INT NOT NULL,
-    kb_name             VARCHAR(255) NOT NULL,
+    kb_id   INT AUTO_INCREMENT,
+    user_id INT          NOT NULL,
+    kb_name VARCHAR(255) NOT NULL,
     PRIMARY KEY (kb_id),
     FOREIGN KEY (user_id) REFERENCES users (user_id),
     CONSTRAINT unique_user_kb_name UNIQUE (user_id, kb_name),
@@ -18,11 +18,12 @@ CREATE TABLE knowledge_bases
 
 CREATE TABLE documents
 (
-    doc_id           INT AUTO_INCREMENT,
-    kb_id            INT NOT NULL,
-    document_name    VARCHAR(255) NOT NULL,
-    source           VARCHAR(255) NOT NULL,
-    raw_doc_path         VARCHAR(255) NOT NULL,
+    doc_id         INT AUTO_INCREMENT,
+    kb_id          INT          NOT NULL,
+    document_name  VARCHAR(255) NOT NULL,
+    source         VARCHAR(255) NOT NULL,
+    raw_doc_path   VARCHAR(255) NOT NULL,
+    clean_doc_path VARCHAR(255) NOT NULL,
     PRIMARY KEY (doc_id),
     FOREIGN KEY (kb_id) REFERENCES knowledge_bases (kb_id),
     CONSTRAINT unique_kb_doc_name UNIQUE (kb_id, document_name),
@@ -38,6 +39,9 @@ INSERT INTO knowledge_bases (kb_id, user_id, kb_name)
 VALUES (1, 1, 'kb-test');
 
 
-select * from knowledge_bases;
-select * from users;
-select * from documents;
+select *
+from knowledge_bases;
+select *
+from users;
+select *
+from documents;

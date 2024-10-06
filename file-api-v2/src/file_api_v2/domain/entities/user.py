@@ -13,3 +13,13 @@ class User:
         for kb in self.kbs:
             if kb.kb_name == kb_name:
                 return kb
+
+        raise KnowledgeBaseNotFoundException(kb_name)
+
+
+class KnowledgeBaseNotFoundException(Exception):
+    """Exception raised when a KnowledgeBase is not found."""
+
+    def __init__(self, kb_name: str):
+        super().__init__(f"KnowledgeBase with name '{kb_name}' not found.")
+        self.kb_name = kb_name

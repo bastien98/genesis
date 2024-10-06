@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from file_api_v2.dependencies import get_document_manager, get_kb_service
-from file_api_v2.domain.entities.document import PdfDocument
+from file_api_v2.domain.entities.document import Document
 from file_api_v2.services import KbService
 from file_api_v2.services.document_manager import AbstractDocumentManager
 
@@ -19,11 +19,12 @@ async def upload(
     try:
         content = await document.read()
         doc_name = document.filename
-        doc_path = document_manager.savePDF(content, doc_name, username, kb_name)
-        document = PdfDocument(
+        doc_path = document_manager.saveRAW(content, doc_name, username, kb_name)
+        document = Document(
             doc_name=doc_name,
             source="NA",
-            doc_path=doc_path
+            raw_doc_path=doc_path,
+            clean_doc_path="NA"
         )
         kb_service.add_doc_to_kb(username, kb_name, document)
 

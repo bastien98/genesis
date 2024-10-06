@@ -6,6 +6,6 @@ from fastapi import UploadFile
 class StoragePort(ABC):
 
     @abstractmethod
-    def savePDF(self, document: bytes, location: str) -> None:
+    def saveRAW(self, document: bytes, location: str) -> None:
         pass
 

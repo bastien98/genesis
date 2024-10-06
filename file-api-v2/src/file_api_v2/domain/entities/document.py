@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 
 @dataclass
-class PdfDocument:
+class Document:
     doc_name: str
     source: str
-    doc_path: str
+    raw_doc_path: str
+    clean_doc_path: str

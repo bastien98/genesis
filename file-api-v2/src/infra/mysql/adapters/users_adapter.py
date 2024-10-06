@@ -3,7 +3,7 @@ from sqlalchemy import Engine
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session, joinedload
 
-from file_api_v2.domain.entities.document import PdfDocument
+from file_api_v2.domain.entities.document import Document
 from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
 from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.user_port import UsersPort
@@ -87,6 +87,7 @@ class UsersAdapter(UsersPort):
 
         # Create a dictionary of existing knowledge bases keyed by kb_name
         existing_kbs_dict = {kb_dto.kb_name: kb_dto for kb_dto in user_dto.kbs}
+
         logger.debug("Existing KnowledgeBases: %s", list(existing_kbs_dict.keys()))
 
         # Keep track of knowledge bases to remove
@@ -98,13 +99,13 @@ class UsersAdapter(UsersPort):
             if kb.kb_name in existing_kbs_dict:
                 # Update existing knowledge base
                 kb_dto = existing_kbs_dict[kb.kb_name]
-                logger.debug("Updating existing KnowledgeBaseDTO: %s", kb_dto.kb_name)
+                logger.info("Updating existing KnowledgeBaseDTO: %s", kb_dto.kb_name)
                 self._update_kb_dto(kb_dto, kb, session)
             else:
                 # Add new knowledge base
                 kb_dto = KnowledgeBaseDTO(kb_name=kb.kb_name, user_id=user_dto.user_id)
                 user_dto.kbs.append(kb_dto)
-                logger.debug("Added new KnowledgeBaseDTO: %s", kb_dto.kb_name)
+                logger.info("Added new KnowledgeBaseDTO: %s", kb_dto.kb_name)
                 self._update_kb_dto(kb_dto, kb, session)
 
         # Remove knowledge bases not present in the domain model
@@ -127,7 +128,7 @@ class UsersAdapter(UsersPort):
         # Keep track of documents to remove
         docs_to_remove = set(existing_docs_dict.keys())
 
-        for doc in kb.raw_docs:
+        for doc in kb.docs:
             logger.debug("Processing Document: %s", doc.doc_name)
             docs_to_remove.discard(doc.doc_name)
             if doc.doc_name in existing_docs_dict:
@@ -140,7 +141,8 @@ class UsersAdapter(UsersPort):
                 doc_dto = DocumentDto(
                     document_name=doc.doc_name,
                     source=doc.source,
-                    raw_doc_path=doc.doc_path,
+                    raw_doc_path=doc.raw_doc_path,
+                    clean_doc_path=doc.clean_doc_path,
                     kb_id=kb_dto.kb_id
                 )
                 kb_dto.docs.append(doc_dto)
@@ -153,11 +155,11 @@ class UsersAdapter(UsersPort):
             kb_dto.docs.remove(doc_dto)
             session.delete(doc_dto)
 
-    def _update_doc_dto(self, doc_dto: DocumentDto, doc: PdfDocument):
+    def _update_doc_dto(self, doc_dto: DocumentDto, doc: Document):
         """Update PdfDocumentDTO fields."""
         logger.debug("Updating PdfDocumentDTO: %s", doc_dto.document_name)
         doc_dto.source = doc.source
-        doc_dto.raw_doc_path = doc.doc_path
+        doc_dto.raw_doc_path = doc.raw_doc_path
         # Update other fields if necessary
 
     def _map_user_dto_to_domain(self, user_dto: UserDTO) -> User:
@@ -168,11 +170,12 @@ class UsersAdapter(UsersPort):
             kbs=[
                 KnowledgeBase(
                     kb_name=kb.kb_name,
-                    raw_docs=[
-                        PdfDocument(
+                    docs=[
+                        Document(
                             doc_name=doc.document_name,
                             source=doc.source,
-                            doc_path=doc.raw_doc_path
+                            raw_doc_path=doc.raw_doc_path,
+                            clean_doc_path=doc.clean_doc_path
                         )
                         for doc in kb.docs
                     ]

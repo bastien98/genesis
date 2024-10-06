@@ -6,7 +6,7 @@ from file_api_v2.ports.storage_port import StoragePort
 
 class AbstractDocumentManager:
     @abstractmethod
-    def savePDF(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
+    def saveRAW(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
         pass
 
 
@@ -21,7 +21,7 @@ class LocalFileSystemDocumentManager(AbstractDocumentManager):
         kb_location = (self.PROCESSED_FILE_LOCATION / kb_name).resolve()
         return kb_location
 
-    def savePDF(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
+    def saveRAW(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
         raw_location = str((self._get_kb_location(kb_name) / "raw" / "pdf" / doc_name).resolve())
-        self.storage_adapter.savePDF(document, raw_location)
+        self.storage_adapter.saveRAW(document, raw_location)
         return raw_location
