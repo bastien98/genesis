@@ -6,10 +6,10 @@ from file_api_v2.ports.parser_port import MarkdownParserPort
 
 class LlamaParser(MarkdownParserPort):
 
-    async def parse_to_markdown_chunks(self, content: bytes, filename: str) -> list[str]:
+    async def parse_to_markdown_chunks(self, content: bytes, doc_name: str) -> list[str]:
         parser = LlamaParse(
             result_type="markdown"
         )
-        llama_documents = await parser.aload_data(content, extra_info={"file_name": filename})
+        llama_documents = await parser.aload_data(content, extra_info={"file_name": doc_name})
         text_chunks = [chunk.text for chunk in llama_documents]
         return text_chunks

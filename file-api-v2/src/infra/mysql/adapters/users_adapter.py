@@ -142,7 +142,7 @@ class UsersAdapter(UsersPort):
                     document_name=doc.doc_name,
                     source=doc.source,
                     raw_doc_path=doc.raw_doc_path,
-                    clean_doc_path=doc.clean_doc_path,
+                    text_chunks_doc_path=doc.text_chunks_doc_path,
                     kb_id=kb_dto.kb_id
                 )
                 kb_dto.docs.append(doc_dto)
@@ -175,7 +175,7 @@ class UsersAdapter(UsersPort):
                             doc_name=doc.document_name,
                             source=doc.source,
                             raw_doc_path=doc.raw_doc_path,
-                            clean_doc_path=doc.clean_doc_path
+                            text_chunks_doc_path=doc.text_chunks_doc_path
                         )
                         for doc in kb.docs
                     ]

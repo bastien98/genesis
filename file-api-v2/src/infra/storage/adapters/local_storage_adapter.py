@@ -20,7 +20,7 @@ class LocalFileStorageAdapter(StoragePort):
             f.write(document)
             print(f"Document saved at {location}")
 
-    def saveCLEAN(self, chunks: list[str], location: str) -> None:
+    def save_md_chunks(self, chunks: list[str], location: str) -> None:
         directory = location if os.path.isdir(location) else os.path.dirname(location)
         if not os.path.exists(directory):
             os.makedirs(location, exist_ok=True)
@@ -37,3 +37,19 @@ class LocalFileStorageAdapter(StoragePort):
                 chunk_file.write(chunk)
             print(f"[INFO] Saved chunk {index} to {chunk_path}")
 
+    def save_text_chunks(self, chunks: list[str], location: str) -> None:
+        directory = location if os.path.isdir(location) else os.path.dirname(location)
+        if not os.path.exists(directory):
+            os.makedirs(location, exist_ok=True)
+            print(f"[INFO] Directory created: {location}")
+        else:
+            print(f"[INFO] Directory already exists: {location}")
+
+        # Save each chunk in a numbered markdown file
+        for index, chunk in enumerate(chunks, start=1):
+            chunk_filename = f"chunk_{index}.txt"
+            chunk_path = os.path.join(location, chunk_filename)
+            os.makedirs(location, exist_ok=True)
+            with open(chunk_path, 'w') as chunk_file:
+                chunk_file.write(chunk)
+            print(f"[INFO] Saved chunk {index} to {chunk_path}")

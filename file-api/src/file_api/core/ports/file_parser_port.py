@@ -11,5 +11,5 @@ class MarkdownParserPort(ABC):
 class TextParserPort(ABC):
 
     @abstractmethod
-    async def parse_to_text_document(self, content: bytes) -> Document:
+    async def parse_to_text_chunks(self, content: bytes) -> list[str]:
         pass

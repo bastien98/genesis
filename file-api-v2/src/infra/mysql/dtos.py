@@ -35,7 +35,7 @@ class DocumentDto(Base):
     document_name = Column(String(255), nullable=False)
     source = Column(String(255), nullable=False)
     raw_doc_path = Column(String(255), nullable=False)
-    clean_doc_path = Column(String(255), nullable=False)
+    text_chunks_doc_path = Column(String(255), nullable=False)
 
     knowledge_bases = relationship("KnowledgeBaseDTO", back_populates="docs")
 

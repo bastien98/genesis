@@ -10,6 +10,10 @@ class StoragePort(ABC):
         pass
 
     @abstractmethod
-    def saveCLEAN(self, chunks: list[str], location: str) -> None:
+    def save_md_chunks(self, chunks: list[str], location: str) -> None:
+        pass
+
+    @abstractmethod
+    def save_text_chunks(self, chunks: list[str], location: str) -> None:
         pass
 

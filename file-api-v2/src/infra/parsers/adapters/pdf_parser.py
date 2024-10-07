@@ -1,6 +1,7 @@
-from file_api.core.ports.file_parser_port import TextParserPort
 from io import BytesIO
 import PyPDF2
+
+from file_api_v2.ports.parser_port import TextParserPort
 
 
 class PdfParser(TextParserPort):

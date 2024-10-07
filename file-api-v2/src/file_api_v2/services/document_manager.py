@@ -13,6 +13,10 @@ class AbstractDocumentManager:
     def save_md_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
         pass
 
+    @abstractmethod
+    def save_text_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
+        pass
+
 
 class DocumentManager(AbstractDocumentManager):
 
@@ -36,6 +40,11 @@ class DocumentManager(AbstractDocumentManager):
         return raw_location
 
     def save_md_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
-        clean_location = str((self._get_kb_location(username, kb_name) / "md_chunks" / Path(doc_name).stem).resolve())
-        self.storage_adapter.saveCLEAN(chunks, clean_location)
-        return clean_location
+        md_chunks_location = str((self._get_kb_location(username, kb_name) / "md_chunks" / Path(doc_name).stem).resolve())
+        self.storage_adapter.save_md_chunks(chunks, md_chunks_location)
+        return md_chunks_location
+
+    def save_text_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
+        text_chunks_location = str((self._get_kb_location(username, kb_name) / "text_chunks" / Path(doc_name).stem).resolve())
+        self.storage_adapter.save_text_chunks(chunks, text_chunks_location)
+        return text_chunks_location
