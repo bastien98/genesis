@@ -1,4 +1,7 @@
 import os
+import pickle
+
+from rank_bm25 import BM25Okapi
 
 from file_api import config
 from file_api_v2.ports.storage_port import StoragePort
@@ -53,3 +56,22 @@ class LocalFileStorageAdapter(StoragePort):
             with open(chunk_path, 'w') as chunk_file:
                 chunk_file.write(chunk)
             print(f"[INFO] Saved chunk {index} to {chunk_path}")
+
+    def read_text_chunks(self, location: str) -> list[str]:
+        text_chunks = []
+
+        if not os.path.isdir(location):
+            raise ValueError(f"The location '{location}' is not a valid directory.")
+
+        for filename in os.listdir(location):
+            file_path = os.path.join(location, filename)
+
+            if os.path.isfile(file_path) and filename.endswith('.txt'):
+                with open(file_path, 'r') as file:
+                    text_chunks.append(file.read())
+
+        return text_chunks
+
+    def save_BM25_index(self, bm25_index: BM25Okapi, location: str) -> None:
+        with open(location, 'wb') as f:
+            pickle.dump(bm25_index, f)

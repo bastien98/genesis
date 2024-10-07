@@ -1,7 +1,9 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
-from file_api_v2.dependencies import get_document_manager, get_kb_service, get_vector_db_manager
+from file_api_v2.dependencies import get_document_manager, get_kb_service, get_vector_db_manager, get_bm25_manager
 from file_api_v2.domain.entities.document import Document
+from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
 from file_api_v2.services import KbService
+from file_api_v2.services.bm25_manager import Bm25Manager
 from file_api_v2.services.document_manager import AbstractDocumentManager
 from file_api_v2.services.vector_db_manager import VectorDbManager
 from infra.parsers.adapters.llmama_parse import LlamaParser
@@ -18,7 +20,8 @@ async def upload(
         kb_name: str = Query(..., description="Knowledge Base ID"),
         document_manager: AbstractDocumentManager = Depends(get_document_manager),
         vector_db_manager: VectorDbManager = Depends(get_vector_db_manager),
-        kb_service: KbService = Depends(get_kb_service)
+        kb_service: KbService = Depends(get_kb_service),
+        bm25_manager: Bm25Manager = Depends(get_bm25_manager)
 ):
     try:
         content = await document.read()
@@ -41,6 +44,8 @@ async def upload(
         )
         user = kb_service.add_doc_to_kb(username, kb_name, document)
 
+        bm25_index = bm25_manager.update_bm25_index(user, kb_name)
+        document_manager.save_bm25_index(bm25_index, username, kb_name)
 
         return {"message": "Document uploaded and processed successfully.", "document": doc_name}
 

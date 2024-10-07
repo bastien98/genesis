@@ -3,6 +3,7 @@ from sqlalchemy import create_engine
 from file_api_v2 import config
 from file_api_v2.repositories.users_repository import UsersRepository
 from file_api_v2.services.KbService import KbService
+from file_api_v2.services.bm25_manager import Bm25Manager
 from file_api_v2.services.document_manager import AbstractDocumentManager, DocumentManager
 from file_api_v2.services.vector_db_manager import VectorDbManager
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
@@ -68,3 +69,7 @@ def get_kb_service() -> KbService:
 def get_vector_db_manager() -> VectorDbManager:
     local_vector_db_adapter = LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
     return VectorDbManager(local_vector_db_adapter)
+
+
+def get_bm25_manager() -> Bm25Manager:
+    return Bm25Manager(file_storage_adapter)
