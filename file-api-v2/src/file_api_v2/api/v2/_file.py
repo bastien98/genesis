@@ -24,8 +24,9 @@ async def upload(
         doc_name = document.filename
         raw_doc_path = document_manager.saveRAW(content, doc_name, username, kb_name)
         md_chunks = await LlamaParser().parse_to_markdown_chunks(content, doc_name)
-        clean_doc_path = document_manager.saveCLEAN(md_chunks, doc_name, username, kb_name)
+        clean_doc_path = document_manager.save_md_chunks(md_chunks, doc_name, username, kb_name)
         await vector_db_manager.save_chunks_to_kb(md_chunks, username, kb_name)
+
         document = Document(
             doc_name=doc_name,
             source="NA",

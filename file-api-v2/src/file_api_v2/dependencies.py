@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from file_api_v2 import config
 from file_api_v2.repositories.users_repository import UsersRepository
 from file_api_v2.services.KbService import KbService
-from file_api_v2.services.document_manager import AbstractDocumentManager, LocalFileSystemDocumentManager
+from file_api_v2.services.document_manager import AbstractDocumentManager, DocumentManager
 from file_api_v2.services.vector_db_manager import VectorDbManager
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.mysql.adapters.users_adapter import UsersAdapter
@@ -57,7 +57,7 @@ def get_embeddings_service() -> EmbeddingsService:
 
 
 def get_document_manager() -> AbstractDocumentManager:
-    return LocalFileSystemDocumentManager(LocalFileStorageAdapter())
+    return DocumentManager(LocalFileStorageAdapter())
 
 
 def get_kb_service() -> KbService:

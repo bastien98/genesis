@@ -10,11 +10,11 @@ class AbstractDocumentManager:
         pass
 
     @abstractmethod
-    def saveCLEAN(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
+    def save_md_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
         pass
 
 
-class LocalFileSystemDocumentManager(AbstractDocumentManager):
+class DocumentManager(AbstractDocumentManager):
 
     def __init__(self, storage_adapter: StoragePort):
         self.storage_adapter = storage_adapter
@@ -22,17 +22,20 @@ class LocalFileSystemDocumentManager(AbstractDocumentManager):
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
     PROCESSED_FILE_LOCATION = (Path(os.getcwd()) / Path("../../../data/processed")).resolve()
 
-    def _get_kb_location(self, kb_name: str) -> Path:
-        kb_location = (self.PROCESSED_FILE_LOCATION / kb_name).resolve()
+    def _get_user_location(self, username: str) -> Path:
+        kb_location = (self.PROCESSED_FILE_LOCATION / username).resolve()
+        return kb_location
+
+    def _get_kb_location(self, username:str, kb_name: str) -> Path:
+        kb_location = self._get_user_location(username) / Path(kb_name)
         return kb_location
 
     def saveRAW(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
-        raw_location = str((self._get_kb_location(kb_name) / "raw" / "pdf" / doc_name).resolve())
+        raw_location = str((self._get_kb_location(username, kb_name) / "raw" / "pdf" / doc_name).resolve())
         self.storage_adapter.saveRAW(document, raw_location)
         return raw_location
 
-    def saveCLEAN(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
-        clean_location = str((self._get_kb_location(kb_name) / "clean" / Path(doc_name).stem).resolve())
+    def save_md_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
+        clean_location = str((self._get_kb_location(username, kb_name) / "md_chunks" / Path(doc_name).stem).resolve())
         self.storage_adapter.saveCLEAN(chunks, clean_location)
         return clean_location
-
