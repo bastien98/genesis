@@ -32,6 +32,7 @@ class LocalFileStorageAdapter(StoragePort):
         for index, chunk in enumerate(chunks, start=1):
             chunk_filename = f"chunk_{index}.md"
             chunk_path = os.path.join(location, chunk_filename)
+            os.makedirs(location, exist_ok=True)
             with open(chunk_path, 'w') as chunk_file:
                 chunk_file.write(chunk)
             print(f"[INFO] Saved chunk {index} to {chunk_path}")
