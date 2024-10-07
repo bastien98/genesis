@@ -3,6 +3,7 @@ from file_api_v2.dependencies import get_document_manager, get_kb_service
 from file_api_v2.domain.entities.document import Document
 from file_api_v2.services import KbService
 from file_api_v2.services.document_manager import AbstractDocumentManager
+from infra.parsers.adapters.llmama_parse import LlamaParser
 
 router = APIRouter()
 
@@ -20,11 +21,13 @@ async def upload(
         content = await document.read()
         doc_name = document.filename
         raw_doc_path = document_manager.saveRAW(content, doc_name, username, kb_name)
+        md_chunks = await LlamaParser().parse_to_markdown_chunks(content, doc_name)
+        clean_doc_path = document_manager.saveCLEAN(md_chunks, doc_name, username, kb_name)
         document = Document(
             doc_name=doc_name,
             source="NA",
             raw_doc_path=raw_doc_path,
-            clean_doc_path="NA"
+            clean_doc_path=clean_doc_path
         )
         kb_service.add_doc_to_kb(username, kb_name, document)
 

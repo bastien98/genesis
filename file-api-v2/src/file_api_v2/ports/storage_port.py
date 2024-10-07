@@ -9,3 +9,7 @@ class StoragePort(ABC):
     def saveRAW(self, document: bytes, location: str) -> None:
         pass
 
+    @abstractmethod
+    def saveCLEAN(self, chunks: list[str], location: str) -> None:
+        pass
+
