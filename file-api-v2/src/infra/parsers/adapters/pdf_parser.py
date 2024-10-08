@@ -5,7 +5,7 @@ from file_api_v2.ports.parser_port import TextParserPort
 
 
 class PdfParser(TextParserPort):
-    async def parse_to_text_chunks(self, content: bytes) -> list[str]:
+    async def parse_to_text_chunks(self, content: bytes, as_single_string: bool = False) -> list[str] | str:
         reader = PyPDF2.PdfReader(BytesIO(content))
         pages_text = []
 
@@ -15,4 +15,8 @@ class PdfParser(TextParserPort):
             if text:
                 pages_text.append(text)
 
-        return pages_text
+        if as_single_string:
+            return "\n".join(pages_text)
+        else:
+            return pages_text
+
