@@ -2,10 +2,14 @@ import re
 from typing import List
 
 from rank_bm25 import BM25Okapi
+import nltk
+from nltk.corpus import stopwords
 
 from file_api_v2.domain.entities.document import Document
 from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.storage_port import StoragePort
+
+nltk.download('stopwords')
 
 
 class Bm25Manager:
@@ -22,35 +26,19 @@ class Bm25Manager:
         print("")
         return bm25_index
 
-    def bm25_simple(self, text_chunks: List[str]):
-        """
-        Creates a BM25 index from a list of Document objects.
+    def bm25_simple(self, text_chunks: List[str]) -> BM25Okapi:
+        stop_words = set(stopwords.words('english'))
 
-        This function tokenizes each document by splitting the content into words
-        (based on whitespace) and then uses the BM25Okapi model from the rank_bm25
-        library to create and return a BM25 index.
+        def preprocess_text(text):
+            text = text.replace('\x00', '').lower()
+            text = re.sub(r'[^\w\s]', '', text)
+            tokens = text.split()
+            tokens = [word for word in tokens if word not in stop_words]
+            return tokens
 
-        Note:
-        - This is a basic implementation that splits content by spaces.
-        - It can be enhanced by using more advanced text preprocessing techniques
-          such as stemming, lemmatization, stopword removal, or custom tokenization.
+        tokenized_documents = [
+            preprocess_text(text_chunk)
+            for text_chunk in text_chunks
+        ]
 
-        Args:
-            documents (List[Document]): A list of Document objects, each containing
-            the text content to be indexed.
-
-        Returns:
-            BM25Okapi: A BM25 index for querying the tokenized documents.
-        """
-
-        def preprocess(document):
-            document = [re.sub(r'[^\w\s]', '', term.lower().replace('\x00', '')) for term in document]
-            return document
-
-        tokenized_documents = [text_chunk.lower().split() for text_chunk in text_chunks]
-
-        docs = []
-        for doc in tokenized_documents:
-            doc = preprocess(doc)
-            docs.append(doc)
-        return BM25Okapi(docs)
+        return BM25Okapi(tokenized_documents)
