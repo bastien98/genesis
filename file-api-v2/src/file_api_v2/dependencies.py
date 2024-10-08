@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 
 from file_api_v2 import config
 from file_api_v2.repositories.users_repository import UsersRepository
-from file_api_v2.services.KbService import KbService
+from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.bm25_manager import Bm25Manager
 from file_api_v2.services.document_manager import AbstractDocumentManager, DocumentManager
 from file_api_v2.services.vector_db_manager import VectorDbManager
