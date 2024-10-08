@@ -18,7 +18,7 @@ class Bm25Manager:
         for doc in docs:
             all_text_chunks.extend(self.storage_adapter.read_text_chunks(doc.text_chunks_doc_path))
 
-        bm25_index= self.bm25_simple(all_text_chunks)
+        bm25_index = self.bm25_simple(all_text_chunks)
         print("")
         return bm25_index
 

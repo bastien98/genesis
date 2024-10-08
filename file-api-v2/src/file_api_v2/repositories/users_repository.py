@@ -9,7 +9,6 @@ class UsersRepository:
     def retrieve_user(self, username: str) -> User:
         user = self.users.retrieve_user(username)
         if user is None:
-            # Raise a custom exception if the user is not found
             raise UserNotFoundException(username)
         return user
 
@@ -17,9 +16,9 @@ class UsersRepository:
         return self.users.update_user(user)
 
 
-
 class UserNotFoundException(Exception):
     """Exception raised when a User is not found."""
+
     def __init__(self, username: str):
         super().__init__(f"User with username '{username}' not found.")
         self.username = username
