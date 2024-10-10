@@ -8,6 +8,7 @@ from nltk.corpus import stopwords
 from file_api_v2.domain.entities.document import Document
 from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.storage_port import StoragePort
+from file_api_v2.services.document_manager import DocumentManager
 
 nltk.download('stopwords')
 

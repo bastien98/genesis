@@ -23,6 +23,10 @@ class AbstractDocumentManager:
     def save_bm25_index(self, bm25_index: BM25Okapi, username: str, kb_name: str) -> None:
         pass
 
+    @abstractmethod
+    def read_bm25_index(self, username: str, kb_name: str) -> BM25Okapi:
+        pass
+
 
 class DocumentManager(AbstractDocumentManager):
 
@@ -60,3 +64,7 @@ class DocumentManager(AbstractDocumentManager):
     def save_bm25_index(self, bm25_index: BM25Okapi, username: str, kb_name: str) -> None:
         bm25_location = str((self._get_kb_location(username, kb_name) / self.BM25_INDEX_FILENAME).resolve())
         self.storage_adapter.save_BM25_index(bm25_index, bm25_location)
+
+    def read_bm25_index(self, username: str, kb_name: str) -> BM25Okapi:
+        bm25_location = str((self._get_kb_location(username, kb_name) / self.BM25_INDEX_FILENAME).resolve())
+        return self.storage_adapter.read_BM25_index(bm25_location)

@@ -42,23 +42,23 @@ class LocalChromaDbAdapter(VectorDbPort):
         # You can store chunks with associated metadata (e.g., source document, page number) if you want to track the origin or location of each chunk
         collection.add(documents=chunks, ids=chunk_ids)
 
-    # async def similarity_search(self, query: str, kb_id: str, k: int) -> list[Document]:
-    #     """ Retrieves a vector store retriever for a given knowledge base and returns the top-k most similar chunks. """
-    #     return Chroma(
-    #         client=self.aclient,
-    #         collection_name=kb_id,
-    #         embedding_function=self.embedding_function,
-    #     ).as_retriever(
-    #         search_type="similarity",
-    #         search_kwargs={"k": k}
-    #     ).invoke(query)
-    #
-    # async def similarity_search_with_score(self, query: str, kb_id: str, k: int) -> list[tuple[Document, float]]:
-    #     return Chroma(
-    #         client=self.aclient,
-    #         collection_name=kb_id,
-    #         embedding_function=self.embedding_function,
-    #     ).similarity_search_with_score(query=query, k=k)
-    #
-    # def get_kb_document_count(self, kb_id: str) -> int:
-    #     return self.aclient.get_collection(name=kb_id, embedding_function=self.embedding_function).count()
+    async def similarity_search(self, query: str, kb_id: str, k: int) -> list[Document]:
+        """ Retrieves a vector store retriever for a given knowledge base and returns the top-k most similar chunks. """
+        return Chroma(
+            client=self.aclient,
+            collection_name=kb_id,
+            embedding_function=self.embedding_function,
+        ).as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": k}
+        ).invoke(query)
+
+    async def similarity_search_with_score(self, query: str, kb_id: str, k: int) -> list[tuple[Document, float]]:
+        return Chroma(
+            client=self.aclient,
+            collection_name=kb_id,
+            embedding_function=self.embedding_function,
+        ).similarity_search_with_score(query=query, k=k)
+
+    def get_kb_document_count(self, kb_id: str) -> int:
+        return self.aclient.get_collection(name=kb_id, embedding_function=self.embedding_function).count()

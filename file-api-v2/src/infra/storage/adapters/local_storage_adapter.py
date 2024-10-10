@@ -1,5 +1,6 @@
 import os
 import pickle
+import typing
 
 from rank_bm25 import BM25Okapi
 
@@ -75,3 +76,8 @@ class LocalFileStorageAdapter(StoragePort):
     def save_BM25_index(self, bm25_index: BM25Okapi, location: str) -> None:
         with open(location, 'wb') as f:
             pickle.dump(bm25_index, f)
+
+    def read_BM25_index(self, location: str) -> BM25Okapi:
+        with open(str(location), mode='rb') as f:
+            bm25_index = pickle.load(f)
+            return bm25_index

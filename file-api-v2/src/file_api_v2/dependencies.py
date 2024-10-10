@@ -5,6 +5,7 @@ from file_api_v2.repositories.users_repository import UsersRepository
 from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.bm25_manager import Bm25Manager
 from file_api_v2.services.document_manager import AbstractDocumentManager, DocumentManager
+from file_api_v2.services.retriever_service import RetrieverService
 from file_api_v2.services.vector_db_manager import VectorDbManager
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.mysql.adapters.users_adapter import UsersAdapter
@@ -61,15 +62,28 @@ def get_document_manager() -> AbstractDocumentManager:
     return DocumentManager(LocalFileStorageAdapter())
 
 
+engine = create_engine(config.DB_CONNECTION_STR)
+users_repo = UsersRepository(UsersAdapter(engine))
+
+
+def get_users_repo() -> UsersRepository:
+    return users_repo
+
+
 def get_kb_service() -> KbService:
-    engine = create_engine(config.DB_CONNECTION_STR)
-    return KbService(UsersRepository(UsersAdapter(engine)))
+    return KbService(users_repo)
+
+
+local_vector_db_adapter = LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
 
 
 def get_vector_db_manager() -> VectorDbManager:
-    local_vector_db_adapter = LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
     return VectorDbManager(local_vector_db_adapter)
 
 
 def get_bm25_manager() -> Bm25Manager:
     return Bm25Manager(file_storage_adapter)
+
+
+def get_retriever_service() -> RetrieverService:
+    return RetrieverService(local_vector_db_adapter, get_document_manager())
