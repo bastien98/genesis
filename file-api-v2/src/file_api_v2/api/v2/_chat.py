@@ -16,5 +16,5 @@ async def chat(
         users: UsersRepository = Depends(get_users_repo)
 ):
     user = users.retrieve_user(username)
-    docs = await retriever.fusion_retrieval(query, username, kb_name)
+    docs = await retriever.fusion_retrieval(query, username, kb_name, user)
     return {"message": "Received", "kb_id": kb_name, "query": query}
