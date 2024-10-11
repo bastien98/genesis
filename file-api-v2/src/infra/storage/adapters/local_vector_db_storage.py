@@ -25,7 +25,7 @@ class LocalChromaDbAdapter(VectorDbPort):
             embeddings_model
         )
 
-    async def save_chunks(self, chunks: list[str], username: str, kb_name: str) -> None:
+    async def save_chunks(self, chunks: list[str], username: str, kb_name: str, doc_name: str) -> None:
         collection = f"{username}_{kb_name}"
         try:
             # Try to get the collection if it already exists
@@ -40,7 +40,11 @@ class LocalChromaDbAdapter(VectorDbPort):
 
         chunk_ids = [str(uuid.uuid4()) for _ in chunks]
         # You can store chunks with associated metadata (e.g., source document, page number) if you want to track the origin or location of each chunk
-        collection.add(documents=chunks, ids=chunk_ids)
+        metadata = [
+            {"filename": doc_name, "chunk_number": chunk_num}  # Metadata with filename and chunk number
+            for chunk_num, _ in enumerate(chunks, start=1)
+        ]
+        collection.add(documents=chunks, ids=chunk_ids, metadatas=metadata)
 
     async def similarity_search(self, query: str, kb_id: str, k: int) -> list[Document]:
         """ Retrieves a vector store retriever for a given knowledge base and returns the top-k most similar chunks. """

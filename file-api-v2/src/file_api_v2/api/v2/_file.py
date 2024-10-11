@@ -32,7 +32,7 @@ async def upload(
         full_text_md, chunked_md = await LlamaParser().parse_to_markdown_chunks(content, doc_name)
         enhanced_md_chunks = await cch_service.create_context_chunks(full_text_md, chunked_md)
         clean_doc_path = document_manager.save_md_chunks(enhanced_md_chunks, doc_name, username, kb_name)
-        await vector_db_manager.save_chunks_to_kb(enhanced_md_chunks, username, kb_name)
+        await vector_db_manager.save_chunks_to_kb(enhanced_md_chunks, username, kb_name, doc_name)
 
         full_text_txt = await PdfParser().parse_to_text_chunks(content, True)
         chunked_txt = await PdfParser().parse_to_text_chunks(content, False)

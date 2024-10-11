@@ -5,10 +5,11 @@ from langchain_core.vectorstores import VectorStoreRetriever
 
 class VectorDbPort(ABC):
     @abstractmethod
-    async def save_chunks(self, chunks: list[str], username: str, kb_name: str) -> None:
+    async def save_chunks(self, chunks: list[str], username: str, kb_name: str, doc_name: str) -> None:
         """
         Saves all chunks of a document into the specified vector database index.
         Each index in the vector database maps directly to a kb_id.
+        :param filename:
         """
         pass
 
