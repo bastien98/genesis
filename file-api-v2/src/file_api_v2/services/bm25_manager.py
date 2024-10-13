@@ -18,9 +18,11 @@ class Bm25Manager:
         self.storage_adapter = storage_adapter
 
     def update_bm25_index(self, user: User, kb_name: str) -> BM25Okapi:
-        docs = user.get_knowledge_base(kb_name).docs
+        docs_list = user.get_knowledge_base(kb_name).docs
+        sorted_docs_list = sorted(docs_list, key=lambda doc: doc.doc_name)
+
         all_text_chunks = []
-        for doc in docs:
+        for doc in sorted_docs_list:
             all_text_chunks.extend(self.storage_adapter.read_text_chunks(doc.text_chunks_doc_path))
 
         bm25_index = self.bm25_simple(all_text_chunks)
