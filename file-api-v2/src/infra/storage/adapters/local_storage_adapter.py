@@ -1,5 +1,6 @@
 import os
 import pickle
+import re
 import typing
 
 from rank_bm25 import BM25Okapi
@@ -64,7 +65,14 @@ class LocalFileStorageAdapter(StoragePort):
         if not os.path.isdir(location):
             raise ValueError(f"The location '{location}' is not a valid directory.")
 
-        for filename in os.listdir(location):
+        # Function to extract the numeric value from the filename for proper sorting
+        def natural_key(filename):
+            return [int(text) if text.isdigit() else text for text in re.split(r'(\d+)', filename)]
+
+        # Get all txt files and sort them using the natural key
+        sorted_filenames = sorted([f for f in os.listdir(location) if f.endswith('.txt')], key=natural_key)
+
+        for filename in sorted_filenames:
             file_path = os.path.join(location, filename)
 
             if os.path.isfile(file_path) and filename.endswith('.txt'):

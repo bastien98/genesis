@@ -16,12 +16,18 @@ class RetrieverService:
                                docs_to_retrieve: int = 20) -> List[str]:
         kb_name_in_vdb = f"{username}_{kb_name}"
         docs_list = user.get_knowledge_base(kb_name).docs
-        filename_index = {filename: index for index, filename in enumerate(docs_list)}
+        filename_index = {doc.doc_name: index for index, doc in enumerate(docs_list)}
 
         count = self.vector_db.get_kb_document_count(kb_name_in_vdb)
         all_docs = await self.vector_db.similarity_search(query, kb_name_in_vdb, count)
 
-        sorted_documents = sorted(all_docs, key=lambda doc: filename_index.get(doc['filename'], float('inf')))
+        sorted_documents = sorted(
+            all_docs,
+            key=lambda doc: (
+                filename_index.get(doc.metadata.get('filename'), float('inf')),
+                doc.metadata.get('chunk_number', float('inf'))
+            )
+        )
 
         all_docs_with_score = await self.vector_db.similarity_search_with_score(query, kb_name_in_vdb, count)
         bm25_index = self.document_manager.read_bm25_index(username, kb_name)
@@ -39,4 +45,4 @@ class RetrieverService:
         sorted_indices = np.argsort(combined_scores)[::-1]
 
         # Step 7: Return top k documents
-        return [all_docs[i].page_content for i in sorted_indices[:docs_to_retrieve]]
+        return [sorted_documents[i].page_content for i in sorted_indices[:docs_to_retrieve]]
