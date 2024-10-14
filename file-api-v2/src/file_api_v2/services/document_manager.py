@@ -7,28 +7,7 @@ from rank_bm25 import BM25Okapi
 from file_api_v2.ports.storage_port import StoragePort
 
 
-class AbstractDocumentManager:
-    @abstractmethod
-    def saveRAW(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
-        pass
-
-    @abstractmethod
-    def save_md_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
-        pass
-
-    @abstractmethod
-    def save_text_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
-        pass
-    @abstractmethod
-    def save_bm25_index(self, bm25_index: BM25Okapi, username: str, kb_name: str) -> None:
-        pass
-
-    @abstractmethod
-    def read_bm25_index(self, username: str, kb_name: str) -> BM25Okapi:
-        pass
-
-
-class DocumentManager(AbstractDocumentManager):
+class FileStore:
 
     def __init__(self, storage_adapter: StoragePort):
         self.storage_adapter = storage_adapter

@@ -1,6 +1,6 @@
 from file_api_v2.domain.entities.document import Document
 from file_api_v2.domain.entities.user import User
-from file_api_v2.repositories.users_repository import UsersRepository
+from file_api_v2.repositories.user_repository import UsersRepository
 
 
 class KbService:

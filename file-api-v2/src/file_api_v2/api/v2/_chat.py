@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Query, Form, Depends
 
 from file_api_v2.dependencies import get_retriever_service, get_users_repo
-from file_api_v2.repositories.users_repository import UsersRepository
+from file_api_v2.repositories.user_repository import UsersRepository
 from file_api_v2.services.retriever_service import RetrieverService
 
 router = APIRouter()

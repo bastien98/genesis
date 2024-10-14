@@ -1,10 +1,10 @@
 from sqlalchemy import create_engine
 
 from file_api_v2 import config
-from file_api_v2.repositories.users_repository import UsersRepository
+from file_api_v2.repositories.user_repository import UsersRepository
 from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.bm25_manager import Bm25Manager
-from file_api_v2.services.document_manager import AbstractDocumentManager, DocumentManager
+from file_api_v2.services.document_manager import AbstractDocumentManager, FileStore
 from file_api_v2.services.retriever_service import RetrieverService
 from file_api_v2.services.vector_db_manager import VectorDbManager
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
@@ -59,7 +59,7 @@ def get_embeddings_service() -> EmbeddingsService:
 
 
 def get_document_manager() -> AbstractDocumentManager:
-    return DocumentManager(LocalFileStorageAdapter())
+    return FileStore(LocalFileStorageAdapter())
 
 
 engine = create_engine(config.DB_CONNECTION_STR)
