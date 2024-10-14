@@ -2,7 +2,7 @@ from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.user_port import UsersPort
 
 
-class UsersRepository:
+class UserRepository:
     def __init__(self, users: UsersPort):
         self.users = users
 
