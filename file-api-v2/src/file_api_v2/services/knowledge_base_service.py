@@ -37,16 +37,16 @@ class KnowledgeBaseService:
         doc_name = raw_doc.name
         # Get active user
         user = self.user_repo.retrieve_user(username)
-        # Calculate locations
-        raw_doc_path = self.local_location_service.get_raw_doc_path(username, kb_name, doc_name)
-        text_chunks_doc_path = self.local_location_service.get_text_chunks_doc_path(username, kb_name, doc_name)
-        md_chunks_doc_path = self.local_location_service.get_md_chunks_doc_path(username, kb_name, doc_name)
-        bm25_index_path = self.local_location_service.get_bm25_index_path(username, kb_name)
+        # Calculate file storage locations
+        raw_doc_path = self.local_location_service.get_raw_doc_location(username, kb_name, doc_name)
+        text_chunks_doc_path = self.local_location_service.get_text_chunks_location(username, kb_name, doc_name)
+        md_chunks_doc_path = self.local_location_service.get_md_chunks_doc_location(username, kb_name, doc_name)
+        bm25_index_path = self.local_location_service.get_bm25_index_location(username, kb_name)
         # Save the raw document to file storage
         self.file_storage_service.save_raw_file(raw_doc, raw_doc_path)
-        # Parse the byte content to text and return pages
+        # Parse the byte content to text and return full text and page list
         full_text, text_chunks = self.parser.parse_to_text(raw_doc.content)
-        # Parse the byte content to Markdown text and return pages
+        # Parse the byte content to Markdown text and return full text and page list
         full_md_text, md_chunks = self.parser.parse_to_markdown(raw_doc.content)
         # Add context to chunks
         ctx_text_chunks = await self.context_service.create_context_chunks(full_text, text_chunks)
@@ -57,8 +57,7 @@ class KnowledgeBaseService:
         # Save the chunks in the vector db
         await self.vector_db_service.save_chunks_to_kb(ctx_text_chunks, username, kb_name, doc_name)
         # Update user state to reflect the change
-        document = Document(RawDocument.name, RawDocument.source, raw_doc_path, text_chunks_doc_path,
-                            md_chunks_doc_path)
+        document = Document(RawDocument.name, RawDocument.source)
         self.user_repo.add_document_to_kb(user, kb_name, document)
         # Update existing BM25 index
         self.bm25_repo.update_bm25_index(user, kb_name)
