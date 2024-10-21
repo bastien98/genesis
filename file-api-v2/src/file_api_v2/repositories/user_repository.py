@@ -1,4 +1,4 @@
-from file_api_v2.domain.entities.user import User
+from file_api_v2.domain.entities import User
 from file_api_v2.ports.user_port import UsersPort
 
 

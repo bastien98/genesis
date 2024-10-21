@@ -8,6 +8,7 @@ from file_api_v2.ports.parsers import ParserPort
 from file_api_v2.ports.repositories import ChunkRepository, BM25IndexRepository
 from file_api_v2.repositories.raw_document_repository import RawDocumentRepository
 from file_api_v2.repositories.user_repository import UserRepository
+from file_api_v2.services.context_service import ContextService
 from file_api_v2.services.location_service import LocalLocationService
 from file_api_v2.utils.parser import Parser
 
@@ -44,12 +45,12 @@ class KnowledgeBaseService:
         # Save the raw document
         self.raw_document_repo.save_raw_document(raw_doc, raw_doc_path)
         # Parse the byte content to text and return pages
-        text_chunks = self.parser.parse_to_text(raw_doc.content)
+        full_text, text_chunks = self.parser.parse_to_text(raw_doc.content)
         # Parse the byte content to Markdown text and return pages
-        md_chunks = self.parser.parse_to_markdown(raw_doc.content)
+        full_md_text, md_chunks = self.parser.parse_to_markdown(raw_doc.content)
         # Add context to chunks
-        ctx_text_chunks = self.context_service.create_context_chunks(text_chunks)
-        ctx_md_chunks = self.context_service.create_context_chunks(md_chunks)
+        ctx_text_chunks = self.context_service.create_context_chunks(full_text, text_chunks)
+        ctx_md_chunks = self.context_service.create_context_chunks(full_md_text, md_chunks)
         # Save the chunks
         self.chunk_repo.save_chunks(ctx_text_chunks, text_chunks_doc_path, user, kb_name)
         self.chunk_repo.save_chunks(ctx_md_chunks, md_chunks_doc_path, user, kb_name)

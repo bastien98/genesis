@@ -2,7 +2,7 @@ from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from file_api_v2.dependencies import get_document_manager, get_kb_service, get_vector_db_manager, get_bm25_manager
 from file_api_v2.domain.entities.document import Document
 from file_api_v2.services.bm25_manager import Bm25Manager
-from file_api_v2.services import cch_service
+from file_api_v2.services import context_service
 from file_api_v2.services.document_manager import AbstractDocumentManager
 from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.vector_db_manager import VectorDbManager
