@@ -4,10 +4,10 @@ from fastapi import UploadFile
 from rank_bm25 import BM25Okapi
 
 
-class StoragePort(ABC):
+class FileStoragePort(ABC):
 
     @abstractmethod
-    def saveRAW(self, document: bytes, location: str) -> None:
+    def save_raw_file(self, document: bytes, location: str) -> None:
         pass
 
     @abstractmethod

@@ -7,14 +7,14 @@ from nltk.corpus import stopwords
 
 from file_api_v2.domain.entities.document import Document
 from file_api_v2.domain.entities.user import User
-from file_api_v2.ports.storage_port import StoragePort
+from file_api_v2.ports.storage_port import FileStoragePort
 from file_api_v2.services.document_manager import FileStore
 
 nltk.download('stopwords')
 
 
 class Bm25Manager:
-    def __init__(self, storage_adapter: StoragePort):
+    def __init__(self, storage_adapter: FileStoragePort):
         self.storage_adapter = storage_adapter
 
     def update_bm25_index(self, user: User, kb_name: str) -> BM25Okapi:

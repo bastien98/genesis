@@ -6,14 +6,14 @@ import typing
 from rank_bm25 import BM25Okapi
 
 from file_api import config
-from file_api_v2.ports.storage_port import StoragePort
+from file_api_v2.ports.storage_port import FileStoragePort
 
 
-class LocalFileStorageAdapter(StoragePort):
+class LocalFileFileStorageAdapter(FileStoragePort):
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
     PROCESSED_FILE_LOCATION = config.PROCESSED_FILE_LOCATION
 
-    def saveRAW(self, document: bytes, location: str) -> None:
+    def save_raw_file(self, document: bytes, location: str) -> None:
         directory = os.path.dirname(location)
         if not os.path.exists(directory):
             os.makedirs(directory, exist_ok=True)

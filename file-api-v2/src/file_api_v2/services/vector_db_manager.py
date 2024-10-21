@@ -5,7 +5,7 @@ from typing import List, Tuple
 
 from langchain_core.documents import Document
 
-from file_api_v2.ports.storage_port import StoragePort
+from file_api_v2.ports.storage_port import FileStoragePort
 from file_api_v2.ports.vector_db_port import VectorDbPort
 
 

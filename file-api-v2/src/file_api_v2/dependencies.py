@@ -9,7 +9,7 @@ from file_api_v2.services.retriever_service import RetrieverService
 from file_api_v2.services.vector_db_manager import VectorDbManager
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.mysql.adapters.users_adapter import UsersAdapter
-from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
+from infra.storage.adapters.local_storage_adapter import LocalFileFileStorageAdapter
 
 import json
 import os
@@ -51,7 +51,7 @@ else:
     print(
         f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
 
-file_storage_adapter = LocalFileStorageAdapter()
+file_storage_adapter = LocalFileFileStorageAdapter()
 
 
 def get_embeddings_service() -> EmbeddingsService:
@@ -59,7 +59,7 @@ def get_embeddings_service() -> EmbeddingsService:
 
 
 def get_document_manager() -> FileStore:
-    return FileStore(LocalFileStorageAdapter())
+    return FileStore(LocalFileFileStorageAdapter())
 
 
 engine = create_engine(config.DB_CONNECTION_STR)

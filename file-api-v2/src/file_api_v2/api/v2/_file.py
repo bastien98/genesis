@@ -27,7 +27,7 @@ async def upload(
         content = await document.read()
         doc_name = document.filename
 
-        raw_doc_path = document_manager.saveRAW(content, doc_name, username, kb_name)
+        raw_doc_path = document_manager.save_raw_file(content, doc_name, username, kb_name)
 
         full_text_md, chunked_md = await LlamaParser().parse_to_markdown_chunks(content, doc_name)
         enhanced_md_chunks = await cch_service.create_context_chunks(full_text_md, chunked_md)
@@ -37,7 +37,7 @@ async def upload(
         full_text_txt = await PdfParser().parse_to_text_chunks(content, True)
         chunked_txt = await PdfParser().parse_to_text_chunks(content, False)
         enhanced_chunked_txt = await cch_service.create_context_chunks(full_text_txt, chunked_txt)
-        text_chunks_doc_path = document_manager.save_text_chunks(enhanced_chunked_txt, doc_name, username, kb_name)
+        text_chunks_doc_path = document_manager.save_as_text(enhanced_chunked_txt, doc_name, username, kb_name)
 
         document = Document(
             doc_name=doc_name,

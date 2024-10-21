@@ -4,12 +4,12 @@ from pathlib import Path
 
 from rank_bm25 import BM25Okapi
 
-from file_api_v2.ports.storage_port import StoragePort
+from file_api_v2.ports.storage_port import FileStoragePort
 
 
 class FileStore:
 
-    def __init__(self, storage_adapter: StoragePort):
+    def __init__(self, storage_adapter: FileStoragePort):
         self.storage_adapter = storage_adapter
 
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
@@ -25,7 +25,7 @@ class FileStore:
 
     def saveRAW(self, document: bytes, doc_name: str, username: str, kb_name: str) -> str:
         raw_location = str((self._get_kb_location(username, kb_name) / "raw" / "pdf" / doc_name).resolve())
-        self.storage_adapter.saveRAW(document, raw_location)
+        self.storage_adapter.save_raw_file(document, raw_location)
         return raw_location
 
     def save_md_chunks(self, chunks: list[str], doc_name: str, username: str, kb_name: str) -> str:
