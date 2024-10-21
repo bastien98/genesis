@@ -5,7 +5,7 @@ from file_api_v2.services.bm25_manager import Bm25Manager
 from file_api_v2.services import context_service
 from file_api_v2.services.document_manager import AbstractDocumentManager
 from file_api_v2.services.kb_service import KbService
-from file_api_v2.services.vector_db_manager import VectorDbManager
+from file_api_v2.services.vector_db_manager import VectorDbService
 from infra.parsers.adapters.llmama_parse import LlamaParser
 from infra.parsers.adapters.pdf_parser import PdfParser
 
@@ -19,7 +19,7 @@ async def upload(
         username: str = Query(..., description="Active User ID"),
         kb_name: str = Query(..., description="Knowledge Base ID"),
         document_manager: AbstractDocumentManager = Depends(get_document_manager),
-        vector_db_manager: VectorDbManager = Depends(get_vector_db_manager),
+        vector_db_manager: VectorDbService = Depends(get_vector_db_manager),
         kb_service: KbService = Depends(get_kb_service),
         bm25_manager: Bm25Manager = Depends(get_bm25_manager)
 ):

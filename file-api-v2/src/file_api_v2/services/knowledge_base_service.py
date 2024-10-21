@@ -11,6 +11,7 @@ from file_api_v2.repositories.user_repository import UserRepository
 from file_api_v2.services.context_service import ContextService
 from file_api_v2.services.file_storage_service import FileStorageService
 from file_api_v2.services.location_service import LocalLocationService
+from file_api_v2.services.vector_db_manager import VectorDbService
 from file_api_v2.utils.parser import Parser
 
 
@@ -18,6 +19,7 @@ class KnowledgeBaseService:
     def __init__(
             self,
             file_storage_service: FileStorageService,
+            vector_db_service: VectorDbService,
             user_repo: UserRepository,
             parser: Parser,
             context_service: ContextService,
@@ -25,6 +27,7 @@ class KnowledgeBaseService:
 
     ):
         self.file_storage_service = file_storage_service
+        self.vector_db_service = vector_db_service
         self.user_repo = user_repo
         self.parser = parser
         self.context_service = context_service
@@ -48,11 +51,11 @@ class KnowledgeBaseService:
         # Add context to chunks
         ctx_text_chunks = await self.context_service.create_context_chunks(full_text, text_chunks)
         ctx_md_chunks = await self.context_service.create_context_chunks(full_md_text, md_chunks)
-        # Save the chunks to file storage
+        # Save the contextualized chunks to file storage
         self.file_storage_service.save_text_chunks(ctx_text_chunks, text_chunks_doc_path)
         self.file_storage_service.save_md_chunks(ctx_md_chunks, md_chunks_doc_path)
         # Save the chunks in the vector db
-
+        await self.vector_db_service.save_chunks_to_kb(ctx_text_chunks, username, kb_name, doc_name)
         # Update user state to reflect the change
         document = Document(RawDocument.name, RawDocument.source, raw_doc_path, text_chunks_doc_path,
                             md_chunks_doc_path)

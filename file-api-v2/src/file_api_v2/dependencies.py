@@ -6,7 +6,7 @@ from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.bm25_manager import Bm25Manager
 from file_api_v2.services.document_manager import FileStore
 from file_api_v2.services.retriever_service import RetrieverService
-from file_api_v2.services.vector_db_manager import VectorDbManager
+from file_api_v2.services.vector_db_manager import VectorDbService
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.mysql.adapters.users_adapter import UsersAdapter
 from infra.storage.adapters.local_storage_adapter import LocalFileFileStorageAdapter
@@ -77,8 +77,8 @@ def get_kb_service() -> KbService:
 local_vector_db_adapter = LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
 
 
-def get_vector_db_manager() -> VectorDbManager:
-    return VectorDbManager(local_vector_db_adapter)
+def get_vector_db_manager() -> VectorDbService:
+    return VectorDbService(local_vector_db_adapter)
 
 
 def get_bm25_manager() -> Bm25Manager:

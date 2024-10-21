@@ -9,7 +9,7 @@ from file_api_v2.ports.storage_port import FileStoragePort
 from file_api_v2.ports.vector_db_port import VectorDbPort
 
 
-class VectorDbManager:
+class VectorDbService:
 
     def __init__(self, vectordb_adapter: VectorDbPort):
         self.vectordb_adapter = vectordb_adapter
