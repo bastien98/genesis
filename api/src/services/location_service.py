@@ -1,9 +1,11 @@
 import os
 from pathlib import Path
 
+import config
+
 
 class LocalLocationService:
-    PROCESSED_FILE_LOCATION = (Path(os.getcwd()) / Path("../../../data/processed")).resolve()
+    PROCESSED_FILE_LOCATION = (Path(os.getcwd()) / Path(config.PROCESSED_FILE_LOCATION)).resolve()
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
 
     def get_user_location(self, username: str) -> Path:

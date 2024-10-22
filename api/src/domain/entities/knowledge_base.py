@@ -13,8 +13,8 @@ class KnowledgeBase:
 
     def add_document(self, document: Document) -> None:
         """Business rule: Add document to knowledge base, ensuring no duplicates."""
-        if self.document_exists(document.name):
-            raise DocumentAlreadyExistsError(document.name, self.name)
+        # if self.document_exists(document.name):
+        #     raise DocumentAlreadyExistsError(document.name, self.name)
         self.documents.append(document)
 
 

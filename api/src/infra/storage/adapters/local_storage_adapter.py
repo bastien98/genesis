@@ -2,14 +2,11 @@ import os
 import pickle
 import re
 from rank_bm25 import BM25Okapi
-
-import config
 from ports.storage_port import FileStoragePort
 
 
 class LocalFileStorageAdapter(FileStoragePort):
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
-    PROCESSED_FILE_LOCATION = "../../data/processed"
 
     def save_raw_file(self, document: bytes, location: str) -> None:
         directory = os.path.dirname(location)
