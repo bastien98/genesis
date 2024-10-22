@@ -39,7 +39,9 @@ VALUES (1, 1, 'kb-test');
 
 select *
 from knowledge_bases;
+
 select *
 from users;
+
 select *
 from documents;

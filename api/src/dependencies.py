@@ -1,7 +1,5 @@
 from fastapi import Depends
 from sqlalchemy import create_engine
-
-import config
 from repositories.user_repository import UserRepository
 from services.context_service import ContextService
 from services.file_storage_service import FileStorageService
@@ -13,7 +11,6 @@ from utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.mysql.adapters.user_adapter import UsersAdapter
 from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
-
 import json
 import os
 from enum import StrEnum
@@ -67,7 +64,7 @@ def get_local_vector_db_adapter():
 
 
 def get_user_adapter():
-    return UsersAdapter(create_engine(config.DB_CONNECTION_STR))
+    return UsersAdapter(create_engine(os.getenv("DB_CONN")))
 
 
 def get_file_storage_service(
