@@ -58,6 +58,8 @@ class KnowledgeBaseService:
         await self.vector_db_service.save_chunks_to_kb(ctx_text_chunks, username, kb_name, doc_name)
         # Update user state to reflect the change
         document = Document(RawDocument.name, RawDocument.source)
-        self.user_repo.add_document_to_kb(user, kb_name, document)
+        user = self.user_repo.retrieve_user(username)
+        kb = user.get_knowledge_base_by_name(kb_name)
+        kb.documents.append(document)
         # Update existing BM25 index
         self.bm25_repo.update_bm25_index(user, kb_name)
