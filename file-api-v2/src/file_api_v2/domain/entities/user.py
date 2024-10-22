@@ -11,7 +11,7 @@ class User:
     def get_knowledge_base(self, kb_name: str) -> KnowledgeBase:
         """Retrieves a KnowledgeBase by its kb_name."""
         for kb in self.kbs:
-            if kb.kb_name == kb_name:
+            if kb.name == kb_name:
                 return kb
 
         raise KnowledgeBaseNotFoundException(kb_name)

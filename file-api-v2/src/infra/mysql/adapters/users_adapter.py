@@ -84,80 +84,77 @@ class UsersAdapter(UsersPort):
         # user_dto.email = user.email  # Uncomment if email field exists
 
         # Create a dictionary of existing knowledge bases keyed by kb_name
-        existing_kbs_dict = {kb_dto.kb_name: kb_dto for kb_dto in user_dto.kbs}
+        existing_kbs_dict = {kb_dto.name: kb_dto for kb_dto in user_dto.kbs}
 
         logger.debug("Existing KnowledgeBases: %s", list(existing_kbs_dict.keys()))
 
         # Keep track of knowledge bases to remove
         kbs_to_remove = set(existing_kbs_dict.keys())
 
-        for kb in user.kbs:
-            logger.debug("Processing KnowledgeBase: %s", kb.kb_name)
-            kbs_to_remove.discard(kb.kb_name)
-            if kb.kb_name in existing_kbs_dict:
+        for kb in user.knowledge_bases:
+            logger.debug("Processing KnowledgeBase: %s", kb.name)
+            kbs_to_remove.discard(kb.name)
+            if kb.name in existing_kbs_dict:
                 # Update existing knowledge base
-                kb_dto = existing_kbs_dict[kb.kb_name]
-                logger.info("Updating existing KnowledgeBaseDTO: %s", kb_dto.kb_name)
+                kb_dto = existing_kbs_dict[kb.name]
+                logger.info("Updating existing KnowledgeBaseDTO: %s", kb_dto.name)
                 self._update_kb_dto(kb_dto, kb, session)
             else:
                 # Add new knowledge base
-                kb_dto = KnowledgeBaseDTO(kb_name=kb.kb_name, user_id=user_dto.user_id)
+                kb_dto = KnowledgeBaseDTO(name=kb.name, user_id=user_dto.user_id)
                 user_dto.kbs.append(kb_dto)
-                logger.info("Added new KnowledgeBaseDTO: %s", kb_dto.kb_name)
+                logger.info("Added new KnowledgeBaseDTO: %s", kb_dto.name)
                 self._update_kb_dto(kb_dto, kb, session)
 
         # Remove knowledge bases not present in the domain model
         for kb_name in kbs_to_remove:
             kb_dto = existing_kbs_dict[kb_name]
-            logger.debug("Removing KnowledgeBaseDTO: %s", kb_dto.kb_name)
+            logger.debug("Removing KnowledgeBaseDTO: %s", kb_dto.name)
             user_dto.kbs.remove(kb_dto)
             session.delete(kb_dto)
 
     def _update_kb_dto(self, kb_dto: KnowledgeBaseDTO, kb: KnowledgeBase, session):
         """Update KnowledgeBaseDTO fields and related documents."""
-        logger.debug("Updating KnowledgeBaseDTO: %s", kb_dto.kb_name)
+        logger.debug("Updating KnowledgeBaseDTO: %s", kb_dto.name)
 
         # Update simple fields if there are any
 
-        # Create a dictionary of existing documents keyed by document_name
-        existing_docs_dict = {doc_dto.document_name: doc_dto for doc_dto in kb_dto.docs}
+        # Create a dictionary of existing documents keyed by document name
+        existing_docs_dict = {doc_dto.name: doc_dto for doc_dto in kb_dto.docs}
         logger.debug("Existing Documents: %s", list(existing_docs_dict.keys()))
 
         # Keep track of documents to remove
         docs_to_remove = set(existing_docs_dict.keys())
 
-        for doc in kb.docs:
-            logger.debug("Processing Document: %s", doc.doc_name)
-            docs_to_remove.discard(doc.doc_name)
-            if doc.doc_name in existing_docs_dict:
+        for doc in kb.documents:
+            logger.debug("Processing Document: %s", doc.name)
+            docs_to_remove.discard(doc.name)
+            if doc.name in existing_docs_dict:
                 # Update existing document
-                doc_dto = existing_docs_dict[doc.doc_name]
-                logger.debug("Updating existing PdfDocumentDTO: %s", doc_dto.document_name)
+                doc_dto = existing_docs_dict[doc.name]
+                logger.debug("Updating existing DocumentDto: %s", doc_dto.name)
                 self._update_doc_dto(doc_dto, doc)
             else:
                 # Add new document
                 doc_dto = DocumentDto(
-                    document_name=doc.doc_name,
-                    source=doc.source,
-                    raw_doc_path=doc.raw_doc_path,
-                    text_chunks_doc_path=doc.text_chunks_doc_path,
-                    kb_id=kb_dto.kb_id
+                    name=doc.name,
+                    kb_id=kb_dto.kb_id,
+                    source=doc.source
                 )
                 kb_dto.docs.append(doc_dto)
-                logger.debug("Added new PdfDocumentDTO: %s", doc_dto.document_name)
+                logger.debug("Added new DocumentDto: %s", doc_dto.name)
 
         # Remove documents not present in the domain model
         for doc_name in docs_to_remove:
             doc_dto = existing_docs_dict[doc_name]
-            logger.debug("Removing PdfDocumentDTO: %s", doc_dto.document_name)
+            logger.debug("Removing DocumentDto: %s", doc_dto.name)
             kb_dto.docs.remove(doc_dto)
             session.delete(doc_dto)
 
     def _update_doc_dto(self, doc_dto: DocumentDto, doc: Document):
-        """Update PdfDocumentDTO fields."""
-        logger.debug("Updating PdfDocumentDTO: %s", doc_dto.document_name)
+        """Update DocumentDto fields."""
+        logger.debug("Updating DocumentDto: %s", doc_dto.name)
         doc_dto.source = doc.source
-        doc_dto.raw_doc_path = doc.raw_doc_path
         # Update other fields if necessary
 
     def _map_user_dto_to_domain(self, user_dto: UserDTO) -> User:
@@ -165,15 +162,13 @@ class UsersAdapter(UsersPort):
         logger.debug("Mapping UserDTO to User domain model for user: %s", user_dto.username)
         return User(
             username=user_dto.username,
-            kbs=[
+            knowledge_bases=[
                 KnowledgeBase(
-                    kb_name=kb.kb_name,
-                    docs=[
+                    name=kb.name,
+                    documents=[
                         Document(
-                            doc_name=doc.document_name,
+                            name=doc.name,
                             source=doc.source,
-                            raw_doc_path=doc.raw_doc_path,
-                            text_chunks_doc_path=doc.text_chunks_doc_path
                         )
                         for doc in kb.docs
                     ]

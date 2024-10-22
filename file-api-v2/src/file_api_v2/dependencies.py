@@ -5,12 +5,9 @@ from file_api_v2 import config
 from file_api_v2.repositories.user_repository import UserRepository
 from file_api_v2.services.context_service import ContextService
 from file_api_v2.services.file_storage_service import FileStorageService
-from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.bm25_service import Bm25Service
-from file_api_v2.services.document_manager import FileStore
 from file_api_v2.services.knowledge_base_service import KnowledgeBaseService
 from file_api_v2.services.location_service import LocalLocationService
-from file_api_v2.services.retriever_service import RetrieverService
 from file_api_v2.services.vector_db_service import VectorDbService
 from file_api_v2.utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
@@ -20,7 +17,6 @@ from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
 import json
 import os
 from enum import StrEnum
-from file_api.core.services.embeddings_service import EmbeddingsService
 from langchain_openai import OpenAIEmbeddings
 from langchain_ollama import OllamaEmbeddings
 from dotenv import load_dotenv
@@ -56,40 +52,6 @@ else:
     EMBEDDINGS_CLIENT = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
     print(
         f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
-
-file_storage_adapter = LocalFileStorageAdapter()
-
-
-def get_embeddings_service() -> EmbeddingsService:
-    return EmbeddingsService(EMBEDDINGS_CLIENT)
-
-
-def get_document_manager() -> FileStore:
-    return FileStore(LocalFileStorageAdapter())
-
-
-def get_users_repo() -> UserRepository:
-    return users_repo
-
-
-def get_kb_service() -> KbService:
-    return KbService(users_repo)
-
-
-def get_vector_db_manager() -> VectorDbService:
-    return VectorDbService(local_vector_db_adapter)
-
-
-def get_bm25_manager() -> Bm25Service:
-    return Bm25Service(file_storage_adapter)
-
-
-def get_retriever_service() -> RetrieverService:
-    return RetrieverService(local_vector_db_adapter, get_document_manager())
-
-
-
-
 
 
 def get_location_service() -> LocalLocationService:

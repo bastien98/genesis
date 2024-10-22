@@ -4,6 +4,8 @@ from typing import List, Tuple
 import PyPDF2
 from llama_parse import LlamaParse
 
+from file_api_v2.domain.entities import RawDocument
+
 
 class Parser:
     @staticmethod
@@ -20,11 +22,11 @@ class Parser:
         return "\n".join(pages_text), pages_text
 
     @staticmethod
-    def parse_to_markdown(content: bytes, as_single_string: bool = False) -> tuple[str, list[str]]:
+    async def parse_to_markdown(doc: RawDocument, as_single_string: bool = False) -> tuple[str, list[str]]:
         parser = LlamaParse(
             result_type="markdown"
         )
-        llama_documents = parser.load_data(content)
+        llama_documents = await parser.aload_data(doc.content, extra_info={'file_name': doc.name})
         pages = [page.text for page in llama_documents]
 
         return "\n".join(pages), pages

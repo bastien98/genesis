@@ -33,6 +33,10 @@ class User:
                 return kb
         raise KnowledgeBaseNotFoundError(self.username, kb_name)
 
+    def add_document_to_knowledge_base(self, kb_name: str, document: Document) -> None:
+        kb = self.get_knowledge_base_by_name(kb_name)
+        kb.documents.append(document)
+
 
 class KnowledgeBaseNotFoundError(Exception):
     def __init__(self, username: str, kb_name: str):
