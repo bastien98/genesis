@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from langchain_core.documents import Document
-from langchain_core.vectorstores import VectorStoreRetriever
 
 
 class VectorDbPort(ABC):

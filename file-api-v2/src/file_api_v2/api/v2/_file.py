@@ -1,6 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends, Query
 from file_api_v2.dependencies import get_knowledge_base_service
-from file_api_v2.domain.entities import RawDocument
+from file_api_v2.domain.entities.raw_document import RawDocument
 from file_api_v2.services.knowledge_base_service import KnowledgeBaseService
 
 router = APIRouter()

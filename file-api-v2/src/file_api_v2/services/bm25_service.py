@@ -5,8 +5,7 @@ from rank_bm25 import BM25Okapi
 import nltk
 from nltk.corpus import stopwords
 
-
-from file_api_v2.domain.entities import User
+from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.storage_port import FileStoragePort
 from file_api_v2.services.location_service import LocalLocationService
 

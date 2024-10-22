@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class Document:
+class RawDocument:
     name: str
     source: str
+    content: bytes

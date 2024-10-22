@@ -1,8 +1,6 @@
 import os
 import pickle
 import re
-import typing
-
 from rank_bm25 import BM25Okapi
 
 from file_api import config

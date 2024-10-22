@@ -3,7 +3,9 @@ from sqlalchemy import Engine
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import Session, joinedload
 
-from file_api_v2.domain.entities import Document, User, KnowledgeBase
+from file_api_v2.domain.entities.document import Document
+from file_api_v2.domain.entities.knowledge_base import KnowledgeBase
+from file_api_v2.domain.entities.user import User
 from file_api_v2.ports.user_port import UsersPort
 from infra.mysql.dtos import UserDTO, KnowledgeBaseDTO, DocumentDto
 

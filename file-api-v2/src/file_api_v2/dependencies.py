@@ -11,7 +11,7 @@ from file_api_v2.services.location_service import LocalLocationService
 from file_api_v2.services.vector_db_service import VectorDbService
 from file_api_v2.utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
-from infra.mysql.adapters.users_adapter import UsersAdapter
+from infra.mysql.adapters.user_adapter import UsersAdapter
 from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
 
 import json
@@ -20,7 +20,7 @@ from enum import StrEnum
 from langchain_openai import OpenAIEmbeddings
 from langchain_ollama import OllamaEmbeddings
 from dotenv import load_dotenv
-from infra.storage.adapters.local_vector_db_storage import LocalChromaDbAdapter
+from infra.storage.adapters.local_vector_db_adapter import LocalChromaDbAdapter
 
 load_dotenv()
 

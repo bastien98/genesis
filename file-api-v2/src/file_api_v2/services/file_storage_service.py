@@ -1,6 +1,5 @@
 from typing import List
-
-from file_api_v2.domain.entities import RawDocument
+from file_api_v2.domain.entities.raw_document import RawDocument
 from file_api_v2.ports.storage_port import FileStoragePort
 
 

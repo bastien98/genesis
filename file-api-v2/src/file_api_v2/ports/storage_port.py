@@ -1,6 +1,4 @@
 from abc import ABC, abstractmethod
-
-from fastapi import UploadFile
 from rank_bm25 import BM25Okapi
 
 

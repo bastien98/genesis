@@ -2,7 +2,7 @@ from typing import List
 
 import numpy as np
 
-from file_api_v2.domain.entities.user import User
+from file_api_v2.domain.entities.entities import User
 from file_api_v2.ports.vector_db_port import VectorDbPort
 from file_api_v2.services.document_manager import AbstractDocumentManager
 

@@ -1,10 +1,9 @@
 from io import BytesIO
-from typing import List, Tuple
 
 import PyPDF2
 from llama_parse import LlamaParse
 
-from file_api_v2.domain.entities import RawDocument
+from file_api_v2.domain.entities.raw_document import RawDocument
 
 
 class Parser:
