@@ -4,7 +4,7 @@ from file_api_v2.services.bm25_service import Bm25Service
 from file_api_v2.services.context_service import ContextService
 from file_api_v2.services.file_storage_service import FileStorageService
 from file_api_v2.services.location_service import LocalLocationService
-from file_api_v2.services.vector_db_manager import VectorDbService
+from file_api_v2.services.vector_db_service import VectorDbService
 from file_api_v2.utils.parser import Parser
 
 

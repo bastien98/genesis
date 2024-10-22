@@ -9,7 +9,7 @@ from file_api import config
 from file_api_v2.ports.storage_port import FileStoragePort
 
 
-class LocalFileFileStorageAdapter(FileStoragePort):
+class LocalFileStorageAdapter(FileStoragePort):
     BM25_INDEX_FILENAME = "knowledge_base_bm25_index.pkl"
     PROCESSED_FILE_LOCATION = config.PROCESSED_FILE_LOCATION
 

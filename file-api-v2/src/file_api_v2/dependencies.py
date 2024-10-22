@@ -1,15 +1,21 @@
+from fastapi import Depends
 from sqlalchemy import create_engine
 
 from file_api_v2 import config
 from file_api_v2.repositories.user_repository import UserRepository
+from file_api_v2.services.context_service import ContextService
+from file_api_v2.services.file_storage_service import FileStorageService
 from file_api_v2.services.kb_service import KbService
 from file_api_v2.services.bm25_service import Bm25Service
 from file_api_v2.services.document_manager import FileStore
+from file_api_v2.services.knowledge_base_service import KnowledgeBaseService
+from file_api_v2.services.location_service import LocalLocationService
 from file_api_v2.services.retriever_service import RetrieverService
-from file_api_v2.services.vector_db_manager import VectorDbService
+from file_api_v2.services.vector_db_service import VectorDbService
+from file_api_v2.utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.mysql.adapters.users_adapter import UsersAdapter
-from infra.storage.adapters.local_storage_adapter import LocalFileFileStorageAdapter
+from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
 
 import json
 import os
@@ -51,7 +57,7 @@ else:
     print(
         f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
 
-file_storage_adapter = LocalFileFileStorageAdapter()
+file_storage_adapter = LocalFileStorageAdapter()
 
 
 def get_embeddings_service() -> EmbeddingsService:
@@ -59,11 +65,7 @@ def get_embeddings_service() -> EmbeddingsService:
 
 
 def get_document_manager() -> FileStore:
-    return FileStore(LocalFileFileStorageAdapter())
-
-
-engine = create_engine(config.DB_CONNECTION_STR)
-users_repo = UserRepository(UsersAdapter(engine))
+    return FileStore(LocalFileStorageAdapter())
 
 
 def get_users_repo() -> UserRepository:
@@ -72,9 +74,6 @@ def get_users_repo() -> UserRepository:
 
 def get_kb_service() -> KbService:
     return KbService(users_repo)
-
-
-local_vector_db_adapter = LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
 
 
 def get_vector_db_manager() -> VectorDbService:
@@ -87,3 +86,76 @@ def get_bm25_manager() -> Bm25Service:
 
 def get_retriever_service() -> RetrieverService:
     return RetrieverService(local_vector_db_adapter, get_document_manager())
+
+
+
+
+
+
+def get_location_service() -> LocalLocationService:
+    return LocalLocationService()
+
+
+def get_local_file_storage_adapter():
+    return LocalFileStorageAdapter()
+
+
+def get_local_vector_db_adapter():
+    return LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
+
+
+def get_user_adapter():
+    return UsersAdapter(create_engine(config.DB_CONNECTION_STR))
+
+
+def get_file_storage_service(
+        adapter: LocalFileStorageAdapter = Depends(get_local_file_storage_adapter)
+):
+    return FileStorageService(adapter)
+
+
+def get_vector_db_service(
+        adapter: LocalChromaDbAdapter = Depends(get_local_vector_db_adapter)
+):
+    return VectorDbService(adapter)
+
+
+def get_user_repository(
+        adapter: UsersAdapter = Depends(get_user_adapter)
+):
+    return UserRepository(adapter)
+
+
+def get_parser():
+    return Parser()
+
+
+def get_context_service():
+    return ContextService()
+
+
+def get_bm25_service(
+        location_service=Depends(get_location_service),
+        adapter: LocalFileStorageAdapter = Depends(get_local_file_storage_adapter)
+):
+    return Bm25Service(location_service, adapter)
+
+
+def get_knowledge_base_service(
+        file_storage_service: FileStorageService = Depends(get_file_storage_service),
+        vector_db_service: VectorDbService = Depends(get_vector_db_service),
+        user_repository: UserRepository = Depends(get_user_repository),
+        parser: Parser = Depends(get_parser),
+        context_service: ContextService = Depends(get_context_service),
+        location_service=Depends(get_location_service),
+        bm25_service: Bm25Service = Depends(get_bm25_service),
+) -> KnowledgeBaseService:
+    return KnowledgeBaseService(
+        file_storage_service,
+        vector_db_service,
+        user_repository,
+        parser,
+        context_service,
+        location_service,
+        bm25_service
+    )
