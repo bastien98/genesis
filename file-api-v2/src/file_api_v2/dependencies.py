@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from file_api_v2 import config
 from file_api_v2.repositories.user_repository import UserRepository
 from file_api_v2.services.kb_service import KbService
-from file_api_v2.services.bm25_manager import Bm25Manager
+from file_api_v2.services.bm25_service import Bm25Service
 from file_api_v2.services.document_manager import FileStore
 from file_api_v2.services.retriever_service import RetrieverService
 from file_api_v2.services.vector_db_manager import VectorDbService
@@ -81,8 +81,8 @@ def get_vector_db_manager() -> VectorDbService:
     return VectorDbService(local_vector_db_adapter)
 
 
-def get_bm25_manager() -> Bm25Manager:
-    return Bm25Manager(file_storage_adapter)
+def get_bm25_manager() -> Bm25Service:
+    return Bm25Service(file_storage_adapter)
 
 
 def get_retriever_service() -> RetrieverService:

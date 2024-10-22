@@ -1,13 +1,6 @@
-from typing import List
-
-from rank_bm25 import BM25Okapi
-
-from file_api_v2.domain.entities import Document, User, KnowledgeBase, Chunk, BM25Index, RawDocument
-from file_api_v2.ports.chunkers import ChunkerPort
-from file_api_v2.ports.parsers import ParserPort
-from file_api_v2.ports.repositories import ChunkRepository, BM25IndexRepository
-from file_api_v2.repositories.raw_document_repository import RawDocumentRepository
+from file_api_v2.domain.entities import Document, RawDocument
 from file_api_v2.repositories.user_repository import UserRepository
+from file_api_v2.services.bm25_service import Bm25Service
 from file_api_v2.services.context_service import ContextService
 from file_api_v2.services.file_storage_service import FileStorageService
 from file_api_v2.services.location_service import LocalLocationService
@@ -23,7 +16,8 @@ class KnowledgeBaseService:
             user_repo: UserRepository,
             parser: Parser,
             context_service: ContextService,
-            local_location_service: LocalLocationService
+            local_location_service: LocalLocationService,
+            bm25_service: Bm25Service
 
     ):
         self.file_storage_service = file_storage_service
@@ -32,11 +26,10 @@ class KnowledgeBaseService:
         self.parser = parser
         self.context_service = context_service
         self.local_location_service = local_location_service
+        self.bm25_service = bm25_service
 
     async def add_document(self, raw_doc: RawDocument, username: str, kb_name: str) -> None:
         doc_name = raw_doc.name
-        # Get active user
-        user = self.user_repo.retrieve_user(username)
         # Calculate file storage locations
         raw_doc_path = self.local_location_service.get_raw_doc_location(username, kb_name, doc_name)
         text_chunks_doc_path = self.local_location_service.get_text_chunks_location(username, kb_name, doc_name)
@@ -54,7 +47,7 @@ class KnowledgeBaseService:
         # Save the contextualized chunks to file storage
         self.file_storage_service.save_text_chunks(ctx_text_chunks, text_chunks_doc_path)
         self.file_storage_service.save_md_chunks(ctx_md_chunks, md_chunks_doc_path)
-        # Save the chunks in the vector db
+        # Save the md chunks in the vector db
         await self.vector_db_service.save_chunks_to_kb(ctx_text_chunks, username, kb_name, doc_name)
         # Update user state to reflect the change
         document = Document(RawDocument.name, RawDocument.source)
@@ -62,4 +55,4 @@ class KnowledgeBaseService:
         kb = user.get_knowledge_base_by_name(kb_name)
         kb.documents.append(document)
         # Update existing BM25 index
-        self.bm25_repo.update_bm25_index(user, kb_name)
+        self.bm25_service.update_bm25_index(user, kb_name)

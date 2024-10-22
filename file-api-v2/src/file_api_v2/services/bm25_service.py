@@ -5,29 +5,31 @@ from rank_bm25 import BM25Okapi
 import nltk
 from nltk.corpus import stopwords
 
-from file_api_v2.domain.entities.document import Document
-from file_api_v2.domain.entities.user import User
+
+from file_api_v2.domain.entities import User
 from file_api_v2.ports.storage_port import FileStoragePort
-from file_api_v2.services.document_manager import FileStore
+from file_api_v2.services.location_service import LocalLocationService
 
 nltk.download('stopwords')
 
 
-class Bm25Manager:
-    def __init__(self, storage_adapter: FileStoragePort):
+class Bm25Service:
+    def __init__(self, location_service: LocalLocationService, storage_adapter: FileStoragePort):
+        self.location_service = location_service
         self.storage_adapter = storage_adapter
 
-    def update_bm25_index(self, user: User, kb_name: str) -> BM25Okapi:
-        docs_list = user.get_knowledge_base(kb_name).docs
-        sorted_docs_list = sorted(docs_list, key=lambda doc: doc.doc_name)
+    def update_bm25_index(self, user: User, kb_name: str) -> None:
+        docs_list = user.get_knowledge_base_by_name(kb_name).documents
+        sorted_docs_list = sorted(docs_list, key=lambda doc: doc.name)
 
         all_text_chunks = []
         for doc in sorted_docs_list:
-            all_text_chunks.extend(self.storage_adapter.read_text_chunks(doc.text_chunks_doc_path))
+            text_chunks_path = self.location_service.get_text_chunks_location(user.username, kb_name, doc.name)
+            all_text_chunks.extend(self.storage_adapter.read_text_chunks(text_chunks_path))
 
         bm25_index = self.bm25_simple(all_text_chunks)
-        print("")
-        return bm25_index
+        bm25_location = self.location_service.get_bm25_index_location(user.username, kb_name)
+        self.storage_adapter.save_BM25_index(bm25_index, bm25_location)
 
     def bm25_simple(self, text_chunks: List[str]) -> BM25Okapi:
         stop_words = set(stopwords.words('english'))
