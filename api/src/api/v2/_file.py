@@ -7,7 +7,7 @@ router = APIRouter()
 
 
 # Endpoint to upload a file and add its content to an existing knowledge base
-@router.post("/knowledge_bases/{kb_id}/documents/upload")
+@router.post("/knowledge_bases/{kb_id}/documents/add")
 async def upload(
         kb_id: int,
         document: UploadFile = File(...),
