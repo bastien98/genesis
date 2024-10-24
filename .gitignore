@@ -30,3 +30,4 @@ data/
 
 config/
 /.env
+/qodana.yaml

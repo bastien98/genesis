@@ -25,8 +25,8 @@ class LocalChromaDbAdapter(VectorDbPort):
             embeddings_model
         )
 
-    async def save_chunks(self, chunks: list[str], username: str, kb_name: str, doc_name: str) -> None:
-        collection = f"{username}_{kb_name}"
+    async def save_chunks(self, chunks: list[str], username: str, kb_id: int, doc_name: str) -> None:
+        collection = f"{username}_{kb_id}"
         try:
             # Try to get the collection if it already exists
             print(f"Attempting to retrieve collection: {collection}")

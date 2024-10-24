@@ -7,9 +7,9 @@ router = APIRouter()
 
 
 # Endpoint to upload a file and add its content to an existing knowledge base
-@router.post("/knowledge_bases/{kb_name}/documents/upload")
+@router.post("/knowledge_bases/{kb_id}/documents/upload")
 async def upload(
-        kb_name: str,
+        kb_id: int,
         document: UploadFile = File(...),
         username: str = Query(..., description="Active User ID"),
         knowledge_base_service: KnowledgeBaseService = Depends(get_knowledge_base_service)
@@ -19,7 +19,7 @@ async def upload(
         content = await document.read()
         doc_name = document.filename
         raw_doc = RawDocument(doc_name, "NA", content)
-        await knowledge_base_service.add_document(raw_doc, username, kb_name)
+        await knowledge_base_service.add_document(raw_doc, username, kb_id)
         return {"message": "Document uploaded and processed successfully.", "document": doc_name}
 
     except ValueError as e:

@@ -1,5 +1,7 @@
 from domain.entities.document import Document
 from domain.entities.raw_document import RawDocument
+from repositories.document_repository import DocumentRepository
+from repositories.knowledge_base_repository import KnowledgeBaseRepository
 from repositories.user_repository import UserRepository
 from services.bm25_service import Bm25Service
 from services.context_service import ContextService
@@ -11,14 +13,16 @@ from utils.parser import Parser
 
 class KnowledgeBaseService:
     def __init__(
-        self,
-        file_storage_service: FileStorageService,
-        vector_db_service: VectorDbService,
-        user_repo: UserRepository,
-        parser: Parser,
-        context_service: ContextService,
-        local_location_service: LocalLocationService,
-        bm25_service: Bm25Service
+            self,
+            file_storage_service: FileStorageService,
+            vector_db_service: VectorDbService,
+            user_repo: UserRepository,
+            parser: Parser,
+            context_service: ContextService,
+            local_location_service: LocalLocationService,
+            bm25_service: Bm25Service,
+            kb_repo: KnowledgeBaseRepository,
+            document_repo: DocumentRepository
     ):
         self.file_storage_service = file_storage_service
         self.vector_db_service = vector_db_service
@@ -27,23 +31,24 @@ class KnowledgeBaseService:
         self.context_service = context_service
         self.local_location_service = local_location_service
         self.bm25_service = bm25_service
+        self.kb_repo = kb_repo
+        self.document_repo = document_repo
 
-    async def add_document(self, raw_doc: RawDocument, username: str, kb_name: str) -> None:
+    async def add_document(self, raw_doc: RawDocument, username: str, kb_id: int) -> None:
         # Input validation
         self.validate_document_is_pdf(raw_doc)
 
-        # Retrieve user and knowledge base
-        user = self.user_repo.retrieve_user(username)
         # Add document to knowledge base in domain (validation happens here)
-        document = Document(raw_doc.name, raw_doc.source)
-        user.add_document_to_knowledge_base(kb_name, document)
+        document = Document(name=raw_doc.name, source=raw_doc.source)
+        kb = self.kb_repo.get_by_id(kb_id)
+        kb.add_document(document)
 
         # Add document in external systems
         # Calculate file storage locations
         doc_name = raw_doc.name
-        raw_doc_path = self.local_location_service.get_raw_doc_location(username, kb_name, doc_name)
-        text_chunks_doc_path = self.local_location_service.get_text_chunks_location(username, kb_name, doc_name)
-        md_chunks_doc_path = self.local_location_service.get_md_chunks_doc_location(username, kb_name, doc_name)
+        raw_doc_path = self.local_location_service.get_raw_doc_location(username, kb_id, doc_name)
+        text_chunks_doc_path = self.local_location_service.get_text_chunks_location(username, kb_id, doc_name)
+        md_chunks_doc_path = self.local_location_service.get_md_chunks_doc_location(username, kb_id, doc_name)
 
         # Save the raw document to file storage
         self.file_storage_service.save_raw_file(raw_doc, raw_doc_path)
@@ -63,13 +68,13 @@ class KnowledgeBaseService:
         self.file_storage_service.save_md_chunks(ctx_md_chunks, md_chunks_doc_path)
 
         # Save the md chunks in the vector db
-        await self.vector_db_service.save_chunks_to_kb(ctx_text_chunks, username, kb_name, doc_name)
+        await self.vector_db_service.save_chunks_to_kb(ctx_text_chunks, username, kb_id, doc_name)
 
-        # Persist user state
-        self.user_repo.persist_user(user)
+        # Persist changed state
+        self.document_repo.add(kb_id, document)
 
         # Update existing BM25 index
-        self.bm25_service.update_bm25_index(user, kb_name)
+        self.bm25_service.update_bm25_index(username, kb)
 
     # Input validation methods
     def validate_document_is_pdf(self, raw_doc: RawDocument) -> None:
