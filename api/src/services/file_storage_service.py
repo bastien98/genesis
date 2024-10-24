@@ -7,7 +7,7 @@ class FileStorageService:
     def __init__(self, storage_adapter: FileStoragePort):
         self.store = storage_adapter
 
-    def save_raw_file(self, raw_doc: RawDocument, location: str) -> None:
+    def store_raw_document(self, raw_doc: RawDocument, location: str) -> None:
         self.store.save_raw_file(raw_doc.content, location)
 
     def save_text_chunks(self, text_chunks: List[str], location: str) -> None:
