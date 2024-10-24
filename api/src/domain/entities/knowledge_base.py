@@ -3,18 +3,19 @@ from domain.entities.document import Document
 
 
 class KnowledgeBase:
-    def __init__(self, name: str, documents: List[Document] = None):
+    def __init__(self, kb_id: int, name: str, documents: List[Document] = None):
+        self.kb_id = kb_id
         self.name = name
         self.documents = documents if documents is not None else []
 
     def document_exists(self, doc_name: str) -> bool:
-        """Business rule: Check if a document with the same name already exists."""
+        """Check if a document with the same name already exists."""
         return any(doc.name == doc_name for doc in self.documents)
 
     def add_document(self, document: Document) -> None:
-        """Business rule: Add document to knowledge base, ensuring no duplicates."""
-        # if self.document_exists(document.name):
-        #     raise DocumentAlreadyExistsError(document.name, self.name)
+        """Add document to knowledge base, ensuring no duplicates."""
+        if self.document_exists(document.name):
+            raise DocumentAlreadyExistsError(document.name, self.name)
         self.documents.append(document)
 
 

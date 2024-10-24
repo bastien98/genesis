@@ -1,27 +1,19 @@
+from typing import Optional
 from domain.entities.user import User
-from ports.user_port import UsersPort
+from ports.user_repository_port import UserRepositoryPort
 
 
 class UserRepository:
-    def __init__(self, users: UsersPort):
-        self.users = users
+    def __init__(self, user_repo_adapter: UserRepositoryPort):
+        self.user_repo = user_repo_adapter
 
-    def retrieve_user(self, username: str) -> User:
-        """Retrieve a user by username, raise an exception if not found."""
-        try:
-            user = self.users.retrieve_user(username)
-            if user is None:
-                raise UserNotFoundException(username)
-            return user
-        except Exception as e:
-            raise UserNotFoundException(username) from e
+    def get_by_username(self, username: str) -> Optional[User]:
+        return self.user_repo.get_by_username(username)
 
-    def persist_user(self, user: User) -> None:
-        """Persist the user to the repository, raise an exception if it fails."""
-        try:
-            self.users.update_user(user)
-        except Exception as e:
-            raise UserPersistenceException(user, message="Failed to update user") from e
+    def update(self, user: User) -> None:
+        self.user_repo.update(user)
+
+
 
 
 class UserNotFoundException(Exception):

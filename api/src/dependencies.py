@@ -1,5 +1,15 @@
 from fastapi import Depends
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
+from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
+from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
+from ports.document_repository_port import DocumentRepositoryPort
+from ports.knowledge_base_repository_port import KnowledgeBaseRepositoryPort
+from ports.user_repository_port import UserRepositoryPort
+from repositories.document_repository import DocumentRepository
+from repositories.knowledge_base_repository import KnowledgeBaseRepository
 from repositories.user_repository import UserRepository
 from services.context_service import ContextService
 from services.file_storage_service import FileStorageService
@@ -63,8 +73,25 @@ def get_local_vector_db_adapter():
     return LocalChromaDbAdapter.create(EMBEDDINGS_MODEL)
 
 
-def get_user_adapter():
-    return UsersAdapter(create_engine(os.getenv("DB_CONN")))
+# Create session to database
+Session = sessionmaker(bind=create_engine(os.getenv("DB_CONN")))
+session = Session()
+
+
+def get_document_adapter() -> DocumentRepositoryPort:
+    return MySQLDocumentAdapter(session)
+
+
+def get_knowledge_base_adapter() -> KnowledgeBaseRepositoryPort:
+    return MySQLKbAdapter(session)
+
+
+def get_user_adapter() -> UserRepositoryPort:
+    return MySQLUserAdapter(session)
+
+
+# def get_user_adapter():
+#     return UsersAdapter(create_engine(os.getenv("DB_CONN")))
 
 
 def get_file_storage_service(
@@ -79,8 +106,25 @@ def get_vector_db_service(
     return VectorDbService(adapter)
 
 
+# def get_user_repository(
+#         adapter: UsersAdapter = Depends(get_user_adapter)
+# ):
+#     return UserRepository(adapter)
+
+def get_document_repository(
+        adapter: DocumentRepositoryPort = Depends(get_document_adapter)
+):
+    return DocumentRepository(adapter)
+
+
+def get_knowledge_base_repository(
+        adapter: KnowledgeBaseRepositoryPort = Depends(get_knowledge_base_adapter)
+):
+    return KnowledgeBaseRepository(adapter)
+
+
 def get_user_repository(
-        adapter: UsersAdapter = Depends(get_user_adapter)
+        adapter: UserRepositoryPort = Depends(get_user_adapter)
 ):
     return UserRepository(adapter)
 
@@ -108,6 +152,8 @@ def get_knowledge_base_service(
         context_service: ContextService = Depends(get_context_service),
         location_service=Depends(get_location_service),
         bm25_service: Bm25Service = Depends(get_bm25_service),
+        kb_repo: KnowledgeBaseRepository = Depends(get_knowledge_base_repository),
+        document_repo: DocumentRepository = Depends(get_document_repository)
 ) -> KnowledgeBaseService:
     return KnowledgeBaseService(
         file_storage_service,
@@ -116,5 +162,7 @@ def get_knowledge_base_service(
         parser,
         context_service,
         location_service,
-        bm25_service
+        bm25_service,
+        kb_repo,
+        document_repo
     )
