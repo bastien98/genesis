@@ -13,6 +13,10 @@ class UserRepositoryPort(ABC):
         pass
 
     @abstractmethod
+    def get_by_user_id(self, username: int) -> Optional[User]:
+        pass
+
+    @abstractmethod
     def update(self, user: User) -> None:
         pass
 
