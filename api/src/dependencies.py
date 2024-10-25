@@ -138,9 +138,9 @@ def get_context_service():
 
 def get_bm25_service(
         location_service=Depends(get_location_service),
-        adapter: LocalFileStorageAdapter = Depends(get_local_file_storage_adapter)
+        file_storage_service: FileStorageService = Depends(get_file_storage_service)
 ):
-    return Bm25Service(location_service, adapter)
+    return Bm25Service(location_service, file_storage_service)
 
 
 def get_knowledge_base_service(

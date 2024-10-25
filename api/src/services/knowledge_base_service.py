@@ -51,7 +51,7 @@ class KnowledgeBaseService:
         md_chunks_doc_path = self.local_location_service.get_md_chunks_doc_location(username, kb_id, doc_name)
 
         # Save the raw document to file storage
-        self.file_storage_service.store_raw_document(raw_doc, raw_doc_path)
+        self.file_storage_service.save_raw_document(raw_doc, raw_doc_path)
 
         # Parse the byte content to text and return full text and page list
         full_text, text_chunks = self.parser.parse_to_text(raw_doc.content)
