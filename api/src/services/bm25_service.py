@@ -4,15 +4,14 @@ from rank_bm25 import BM25Okapi
 import nltk
 from nltk.corpus import stopwords
 from domain.entities.knowledge_base import KnowledgeBase
-from ports.storage_port import FileStoragePort
 from services.file_storage_service import FileStorageService
-from services.location_service import LocalLocationService
+from services.location_service import LocationService
 
 nltk.download('stopwords')
 
 
 class Bm25Service:
-    def __init__(self, location_service: LocalLocationService, file_storage_service: FileStorageService):
+    def __init__(self, location_service: LocationService, file_storage_service: FileStorageService):
         self.location_service = location_service
         self.file_storage_service = file_storage_service
 
