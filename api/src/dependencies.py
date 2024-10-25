@@ -17,6 +17,7 @@ from services.file_storage_service import FileStorageService
 from services.bm25_service import Bm25Service
 from services.knowledge_base_service import KnowledgeBaseService
 from services.location_service import LocationService
+from services.retriever_service import RetrieverService
 from services.vector_db_service import VectorDbService
 from utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
@@ -144,10 +145,19 @@ def get_context_service():
 
 
 def get_bm25_service(
-        location_service=Depends(get_location_service),
+        location_service: LocationService = Depends(get_location_service),
         file_storage_service: FileStorageService = Depends(get_file_storage_service)
 ):
     return Bm25Service(location_service, file_storage_service)
+
+
+def get_retriever_service(
+        location_service: LocationService = Depends(get_location_service),
+        kb_repo: KnowledgeBaseRepository = Depends(get_knowledge_base_repository),
+        vectordb_service: VectorDbService = Depends(get_vector_db_service),
+        file_storage_service: FileStorageService = Depends(get_file_storage_service)
+):
+    return RetrieverService(location_service, kb_repo, vectordb_service, file_storage_service)
 
 
 def get_knowledge_base_service(
@@ -159,7 +169,8 @@ def get_knowledge_base_service(
         location_service=Depends(get_location_service),
         bm25_service: Bm25Service = Depends(get_bm25_service),
         kb_repo: KnowledgeBaseRepository = Depends(get_knowledge_base_repository),
-        document_repo: DocumentRepository = Depends(get_document_repository)
+        document_repo: DocumentRepository = Depends(get_document_repository),
+        retriever_service: RetrieverService = Depends(get_retriever_service)
 ) -> KnowledgeBaseService:
     return KnowledgeBaseService(
         file_storage_service,
@@ -170,5 +181,6 @@ def get_knowledge_base_service(
         bm25_service,
         user_repository,
         kb_repo,
-        document_repo
+        document_repo,
+        retriever_service
     )

@@ -24,3 +24,6 @@ class FileStorageService:
 
     def save_BM25_index(self, bm25_index: BM25Okapi, location: str) -> None:
         self.store.save_BM25_index(bm25_index, location)
+
+    def read_BM25_index(self, location: str) -> BM25Okapi:
+        return self.store.read_BM25_index(location)

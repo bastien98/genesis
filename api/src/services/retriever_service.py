@@ -1,35 +1,37 @@
 from typing import List
-
 import numpy as np
-
-from file_api_v2.domain.entities.entities import User
-from ports.vector_db_port import VectorDbPort
-from file_api_v2.services.document_manager import AbstractDocumentManager
+from repositories.knowledge_base_repository import KnowledgeBaseRepository
+from services.file_storage_service import FileStorageService
+from services.location_service import LocationService
+from services.vector_db_service import VectorDbService
 
 
 class RetrieverService:
-    def __init__(self, vector_db: VectorDbPort, document_manager: AbstractDocumentManager):
-        self.vector_db = vector_db
-        self.document_manager = document_manager
+    def __init__(self, location_service: LocationService, kb_repo: KnowledgeBaseRepository,
+                 vectordb_service: VectorDbService, file_storage_service: FileStorageService):
+        self.location_service = location_service
+        self.kb_repo = kb_repo
+        self.vectordb_service = vectordb_service
+        self.file_storage_service = file_storage_service
 
-    async def fusion_retrieval(self, query: str, username: str, kb_name: str, user: User, alpha: float = 0.5,
-                               docs_to_retrieve: int = 20) -> List[str]:
-        kb_name_in_vdb = f"{username}_{kb_name}"
-        docs_list = user.get_knowledge_base(kb_name).docs
-        sorted_docs_list = sorted(docs_list, key=lambda doc: doc.doc_name)
-        filename_index = {doc.doc_name: index for index, doc in enumerate(sorted_docs_list)}
+    async def fusion_retrieval(self, query: str, user_id: int, kb_id: int, alpha: float = 0.5,
+                               k: int = 20) -> List[str]:
+        kb = self.kb_repo.get_by_id(kb_id)
+        docs_list = kb.documents
+        sorted_docs_list = sorted(docs_list, key=lambda doc: doc.name)
+        docs_index = {doc.name: index for index, doc in enumerate(sorted_docs_list)} # Creates a dictionary from docs_list with key: doc_name and value: index in docs_list
 
-        count = self.vector_db.get_kb_document_count(kb_name_in_vdb)
+        kb_doc_count = await self.vectordb_service.get_kb_document_count(kb_id)
 
-
-        all_docs_with_score = await self.vector_db.similarity_search_with_score(query, kb_name_in_vdb, count)
-        bm25_index = self.document_manager.read_bm25_index(username, kb_name)
+        all_docs_with_score = await self.vectordb_service.similarity_search_with_score(query, kb_id, kb_doc_count)
+        bm25_index = self.file_storage_service.read_BM25_index(
+            self.location_service.get_bm25_index_location(user_id, kb_id))
         bm25_scores = bm25_index.get_scores(query.lower().split())
 
         sorted_documents = sorted(
             all_docs_with_score,
             key=lambda doc_tuple: (
-                filename_index.get(doc_tuple[0].metadata.get('filename'), float('inf')),
+                docs_index.get(doc_tuple[0].metadata.get('filename'), float('inf')),
                 doc_tuple[0].metadata.get('chunk_number', float('inf')),
                 doc_tuple[1]  # Adding the 'number' from the tuple for sorting
             )
@@ -40,11 +42,11 @@ class RetrieverService:
 
         bm25_scores = (bm25_scores - np.min(bm25_scores)) / (np.max(bm25_scores) - np.min(bm25_scores))
 
-        # Step 5: Combine scores
+        # Combine scores
         combined_scores = alpha * vector_scores + (1 - alpha) * bm25_scores
 
-        # Step 6: Rank documents
+        # Rank documents
         sorted_indices = np.argsort(combined_scores)[::-1]
 
-        # Step 7: Return top k documents
-        return [sorted_documents[i][0].page_content for i in sorted_indices[:docs_to_retrieve]]
+        # Return top k documents
+        return [sorted_documents[i][0].page_content for i in sorted_indices[:k]]

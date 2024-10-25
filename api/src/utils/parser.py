@@ -24,6 +24,7 @@ class Parser:
             result_type="markdown"
         )
         llama_documents = await parser.aload_data(doc.content, extra_info={'file_name': doc.name})
+        print("Parsing to markdown finished")
         pages = [page.text for page in llama_documents]
 
         return "\n".join(pages), pages

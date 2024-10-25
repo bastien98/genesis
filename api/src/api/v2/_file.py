@@ -11,7 +11,7 @@ router = APIRouter()
 async def upload(
         kb_id: int,
         document: UploadFile = File(...),
-        username: str = Query(..., description="Active User ID"),
+        user_id: int = Query(..., description="Active User ID"),
         knowledge_base_service: KnowledgeBaseService = Depends(get_knowledge_base_service)
 
 ):
@@ -20,7 +20,7 @@ async def upload(
         doc_name = document.filename
         raw_doc = RawDocument(doc_name, "NA", content)
         raw_doc.validate()
-        await knowledge_base_service.add_document(raw_doc, username, kb_id)
+        await knowledge_base_service.add_document(raw_doc, user_id, kb_id)
         return {"message": "Document uploaded and processed successfully.", "document": doc_name}
 
     except ValueError as e:
