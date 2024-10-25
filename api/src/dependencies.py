@@ -5,6 +5,7 @@ from sqlalchemy.orm import sessionmaker
 from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
 from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
 from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
+from infra.storage.adapters.local_location_adapter import LocalLocationAdapter
 from ports.document_repository_port import DocumentRepositoryPort
 from ports.knowledge_base_repository_port import KnowledgeBaseRepositoryPort
 from ports.user_repository_port import UserRepositoryPort
@@ -15,7 +16,7 @@ from services.context_service import ContextService
 from services.file_storage_service import FileStorageService
 from services.bm25_service import Bm25Service
 from services.knowledge_base_service import KnowledgeBaseService
-from services.location_service import LocalLocationService
+from services.location_service import LocationService
 from services.vector_db_service import VectorDbService
 from utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
@@ -60,8 +61,14 @@ else:
         f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
 
 
-def get_location_service() -> LocalLocationService:
-    return LocalLocationService()
+def get_local_location_adapter():
+    return LocalLocationAdapter()
+
+
+def get_location_service(
+        adapter: LocalLocationAdapter = Depends(get_local_location_adapter)
+) -> LocationService:
+    return LocationService(adapter)
 
 
 def get_local_file_storage_adapter():
@@ -157,11 +164,11 @@ def get_knowledge_base_service(
     return KnowledgeBaseService(
         file_storage_service,
         vector_db_service,
-        user_repository,
         parser,
         context_service,
         location_service,
         bm25_service,
+        user_repository,
         kb_repo,
         document_repo
     )

@@ -6,7 +6,7 @@ from repositories.user_repository import UserRepository
 from services.bm25_service import Bm25Service
 from services.context_service import ContextService
 from services.file_storage_service import FileStorageService
-from services.location_service import LocalLocationService
+from services.location_service import LocationService
 from services.vector_db_service import VectorDbService
 from utils.parser import Parser
 
@@ -16,21 +16,21 @@ class KnowledgeBaseService:
             self,
             file_storage_service: FileStorageService,
             vector_db_service: VectorDbService,
-            user_repo: UserRepository,
             parser: Parser,
             context_service: ContextService,
-            local_location_service: LocalLocationService,
+            location_service: LocationService,
             bm25_service: Bm25Service,
+            user_repo: UserRepository,
             kb_repo: KnowledgeBaseRepository,
             document_repo: DocumentRepository
     ):
         self.file_storage_service = file_storage_service
         self.vector_db_service = vector_db_service
-        self.user_repo = user_repo
         self.parser = parser
         self.context_service = context_service
-        self.local_location_service = local_location_service
+        self.location_service = location_service
         self.bm25_service = bm25_service
+        self.user_repo = user_repo
         self.kb_repo = kb_repo
         self.document_repo = document_repo
 
@@ -38,7 +38,7 @@ class KnowledgeBaseService:
         # Input validation
         self.validate_document_is_pdf(raw_doc)
 
-        # Add document to knowledge base in domain (validation happens here)
+        # Add document to knowledge base in domain (business rules are applied here)
         document = Document(name=raw_doc.name, source=raw_doc.source)
         kb = self.kb_repo.get_by_id(kb_id)
         kb.add_document(document)
@@ -46,9 +46,9 @@ class KnowledgeBaseService:
         # Add document in external systems
         # Calculate file storage locations
         doc_name = raw_doc.name
-        raw_doc_path = self.local_location_service.get_raw_doc_location(username, kb_id, doc_name)
-        text_chunks_doc_path = self.local_location_service.get_text_chunks_location(username, kb_id, doc_name)
-        md_chunks_doc_path = self.local_location_service.get_md_chunks_doc_location(username, kb_id, doc_name)
+        raw_doc_path = self.location_service.get_raw_doc_location(username, kb_id, doc_name)
+        text_chunks_doc_path = self.location_service.get_text_chunks_location(username, kb_id, doc_name)
+        md_chunks_doc_path = self.location_service.get_md_chunks_doc_location(username, kb_id, doc_name)
 
         # Save the raw document to file storage
         self.file_storage_service.save_raw_document(raw_doc, raw_doc_path)

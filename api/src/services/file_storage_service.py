@@ -3,7 +3,7 @@ from typing import List
 from rank_bm25 import BM25Okapi
 
 from domain.entities.raw_document import RawDocument
-from ports.storage_port import FileStoragePort
+from ports.file_storage_port import FileStoragePort
 
 
 class FileStorageService:
