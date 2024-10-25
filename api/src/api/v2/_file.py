@@ -19,6 +19,7 @@ async def upload(
         content = await document.read()
         doc_name = document.filename
         raw_doc = RawDocument(doc_name, "NA", content)
+        raw_doc.validate()
         await knowledge_base_service.add_document(raw_doc, username, kb_id)
         return {"message": "Document uploaded and processed successfully.", "document": doc_name}
 

@@ -35,9 +35,6 @@ class KnowledgeBaseService:
         self.document_repo = document_repo
 
     async def add_document(self, raw_doc: RawDocument, username: str, kb_id: int) -> None:
-        # Input validation
-        self.validate_document_is_pdf(raw_doc)
-
         # Add document to knowledge base in domain (business rules are applied here)
         document = Document(name=raw_doc.name, source=raw_doc.source)
         kb = self.kb_repo.get_by_id(kb_id)
@@ -75,9 +72,3 @@ class KnowledgeBaseService:
 
         # Update existing BM25 index
         self.bm25_service.update_bm25_index(username, kb)
-
-    # Input validation methods
-    def validate_document_is_pdf(self, raw_doc: RawDocument) -> None:
-        """Validate that the document is a PDF."""
-        if not raw_doc.name.lower().endswith('.pdf'):
-            raise ValueError(f"The document '{raw_doc.name}' is not a PDF file.")
