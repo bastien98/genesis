@@ -14,7 +14,7 @@ class RetrieverService:
         self.vectordb_service = vectordb_service
         self.file_storage_service = file_storage_service
 
-    async def fusion_retrieval(self, query: str, user_id: int, kb_id: int, alpha: float = 0.5,
+    async def fusion_retrieval(self, query: str, user_id: int, kb_id: int, alpha: float = 0.5,  # Bigger alpha means more wheigth to vector similarity search
                                k: int = 20) -> List[str]:
         kb = self.kb_repo.get_by_id(kb_id)
         docs_list = kb.documents
