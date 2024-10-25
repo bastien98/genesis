@@ -5,13 +5,13 @@ from ports.user_repository_port import UserRepositoryPort
 
 class UserRepository:
     def __init__(self, user_repo_adapter: UserRepositoryPort):
-        self.user_repo = user_repo_adapter
+        self.user_repo_adapter = user_repo_adapter
 
     def get_by_username(self, username: str) -> Optional[User]:
-        return self.user_repo.get_by_username(username)
+        return self.user_repo_adapter.get_by_username(username)
 
     def update(self, user: User) -> None:
-        self.user_repo.update(user)
+        self.user_repo_adapter.update(user)
 
 
 
