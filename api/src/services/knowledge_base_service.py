@@ -84,3 +84,4 @@ class KnowledgeBaseService:
 
     async def retrieve_relevant_chunks_from_kb(self, query: str, user_id: int, kb_id: int) -> List[str]:
         return await self.retriever_service.fusion_retrieval(query, user_id, kb_id)
+
