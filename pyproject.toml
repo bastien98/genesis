@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "super-rag"
+version = "0.1.0"
+description = ""
+authors = ["Bastien98 <bastien.moenaert@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+langchain = "^0.3.4"
+pypdf2 = "^3.0.1"
+sqlalchemy = "^2.0.36"
+rank-bm25 = "^0.2.2"
+nltk = "^3.9.1"
+asyncio = "^3.4.3"
+anthropic = "^0.37.1"
+instructor = "^1.6.3"
+fastapi = "^0.115.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Query, Form, Depends
-
 from dependencies import get_knowledge_base_service
 from services.knowledge_base_service import KnowledgeBaseService
 
