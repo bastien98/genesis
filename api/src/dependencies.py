@@ -25,7 +25,7 @@ from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
 import json
 import os
 from enum import StrEnum
-from langchain_openai import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_ollama import OllamaEmbeddings
 from dotenv import load_dotenv
 from infra.storage.adapters.local_vector_db_adapter import LocalChromaDbAdapter
@@ -39,27 +39,29 @@ class Model(StrEnum):
 
 
 # Default to OpenAI if MODEL is not defined or invalid
-model_env = os.getenv('MODEL', '{"openai": "text-embedding-ada-002"}')
+default_model = {"publisher": "openai", "embeddings": "text-embedding-ada-002", "model": "gpt-4o"}
+model_env = os.getenv('MODEL', default_model)
 try:
-    embeddings_model_env = json.loads(model_env)
+    model_conf = json.loads(model_env)
 except json.JSONDecodeError:
     print(f"Invalid JSON format in MODEL environment variable: {model_env}. Defaulting to OpenAI.")
-    embeddings_model_env = {Model.OPENAI: "text-embedding-ada-002"}
+    model_conf = default_model
 
 # Check which model to use and set EMBEDDINGS_MODEL accordingly
-if Model.OPENAI in embeddings_model_env:
-    EMBEDDINGS_MODEL = OpenAIEmbeddings(model=embeddings_model_env[Model.OPENAI])
+if Model.OPENAI == model_conf.get("publisher"):
+    EMBEDDINGS_MODEL = OpenAIEmbeddings(model=model_conf.get("embeddings"))
     EMBEDDINGS_CLIENT = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
-    print(f"using the OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
-elif Model.OLLAMA in embeddings_model_env:
-    EMBEDDINGS_MODEL = OllamaEmbeddings(model=embeddings_model_env[Model.OLLAMA])
+    LLM = ChatOpenAI(model=model_conf.get("model"))
+    print(f"using the OpenAI model with conf: {model_conf}")
+elif Model.OLLAMA in model_conf:
+    EMBEDDINGS_MODEL = OllamaEmbeddings(model=model_conf[Model.OLLAMA])
     raise NotImplementedError("The 'embeddings_client' for Ollama embeddings is not implemented yet. Please implement "
                               "the client functionality.")
 else:
-    EMBEDDINGS_MODEL = OpenAIEmbeddings(model=embeddings_model_env[Model.OPENAI])
+    EMBEDDINGS_MODEL = OpenAIEmbeddings(model=model_conf[Model.OPENAI])
     EMBEDDINGS_CLIENT = OpenAIEmbeddingsClient(EMBEDDINGS_MODEL)
     print(
-        f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {embeddings_model_env[Model.OPENAI]}")
+        f"Environment variable MODEL undefined, defaulting to OpenAI embeddings model: {model_conf[Model.OPENAI]}")
 
 
 def get_local_location_adapter():

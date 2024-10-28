@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Query, Form, Depends
-from dependencies import get_knowledge_base_service
+from langchain_openai import ChatOpenAI
+
+from dependencies import get_knowledge_base_service, get_retriever_service, LLM
 from services.knowledge_base_service import KnowledgeBaseService
+from services.retriever_service import RetrieverService
+from utils.fusion_retriever import FusionRetriever
+from utils.rag_chain import RagChain
 
 router = APIRouter()
 
@@ -10,9 +15,10 @@ async def chat(
         user_id: int = Query(..., description="Active User ID"),
         kb_id: int = Query(..., description="Knowledge Base ID"),
         query: str = Form(..., description="Query string"),
-        knowledge_base_service: KnowledgeBaseService = Depends(get_knowledge_base_service)
+        retriever_service: RetrieverService = Depends(get_retriever_service)
 
 ):
-    docs = await knowledge_base_service.retrieve_relevant_chunks_from_kb(query, user_id, kb_id)
-    # ranked_docs = reraonker.rank_docs(docs)
-    return {"message": "Received", "kb_id": kb_id, "query": query}
+    fusion = FusionRetriever(retriever_service=retriever_service, user_id=user_id, kb_id=kb_id)
+    rag_chain = RagChain(LLM).create_rag_chain(fusion)
+    results = rag_chain.invoke({"input": query})
+    return {"answer": results["answer"]}

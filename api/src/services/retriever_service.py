@@ -1,5 +1,9 @@
-from typing import List
+from typing import List, Any
 import numpy as np
+from langchain_core.callbacks import CallbackManagerForRetrieverRun
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
+
 from repositories.knowledge_base_repository import KnowledgeBaseRepository
 from services.file_storage_service import FileStorageService
 from services.location_service import LocationService
