@@ -20,6 +20,7 @@ llama-parse = "^0.5.12"
 instructor = "^1.5.2"
 python-dotenv = "^1.0.1"
 uvicorn = "^0.32.0"
+numpy = "^1.26.4"
 
 
 [build-system]
