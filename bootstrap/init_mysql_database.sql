@@ -45,3 +45,7 @@ INSERT INTO knowledge_bases (user_id, name) VALUES (1, 'kb-test');
 SELECT * FROM users;
 SELECT * FROM knowledge_bases;
 SELECT * FROM documents;
+
+-- dev queries
+DELETE FROM documents
+WHERE doc_id = 7;

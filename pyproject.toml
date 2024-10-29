@@ -15,12 +15,13 @@ nltk = "^3.9.1"
 asyncio = "^3.4.3"
 anthropic = "^0.37.1"
 fastapi = "^0.115.4"
-llama-index-core = "^0.11.14"
-llama-parse = "^0.5.12"
-instructor = "^1.5.2"
+instructor = "^1.6.0"
 python-dotenv = "^1.0.1"
 uvicorn = "^0.32.0"
 numpy = "^1.26.4"
+tenacity = "^8.0.0"
+
+#pip install llama-parse ( does not work with poetry atm)
 
 
 [build-system]
