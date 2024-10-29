@@ -15,7 +15,7 @@ nltk = "^3.9.1"
 asyncio = "^3.4.3"
 anthropic = "^0.37.1"
 instructor = "^1.6.3"
-fastapi = "^0.115.3"
+fastapi = "^0.115.4"
 
 
 [build-system]
