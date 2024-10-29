@@ -14,8 +14,10 @@ rank-bm25 = "^0.2.2"
 nltk = "^3.9.1"
 asyncio = "^3.4.3"
 anthropic = "^0.37.1"
-instructor = "^1.6.3"
 fastapi = "^0.115.4"
+llama-index-core = "^0.11.14"
+llama-parse = "^0.5.12"
+instructor = "^1.5.2"
 
 
 [build-system]
