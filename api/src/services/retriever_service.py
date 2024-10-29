@@ -8,6 +8,28 @@ from repositories.knowledge_base_repository import KnowledgeBaseRepository
 from services.file_storage_service import FileStorageService
 from services.location_service import LocationService
 from services.vector_db_service import VectorDbService
+from sentence_transformers import CrossEncoder
+
+
+def rerank(query:str, relevant_docs:List[str]) -> List[str]:
+
+    # Load the cross-encoder model
+    model_name = 'cross-encoder/ms-marco-MiniLM-L-6-v2'
+    model = CrossEncoder(model_name)
+
+    # Prepare pairs of query and documents
+    pairs = [(query, doc) for doc in relevant_docs]
+
+    # Compute relevance scores
+    scores = model.predict(pairs)
+
+    # Combine documents with their scores
+    doc_score_pairs = list(zip(relevant_docs, scores))
+
+    # Sort documents based on scores in descending order
+    sorted_docs = [doc for doc, score in sorted(doc_score_pairs, key=lambda x: x[1], reverse=True)]
+
+    return sorted_docs
 
 
 class RetrieverService:
@@ -18,7 +40,13 @@ class RetrieverService:
         self.vectordb_service = vectordb_service
         self.file_storage_service = file_storage_service
 
-    async def fusion_retrieval(self, query: str, user_id: int, kb_id: int, alpha: float = 0.5,  # Bigger alpha means more wheigth to vector similarity search
+    async def query_kb(self, query, user_id, kb_id) -> List[str]:
+        relevant_docs = await self.fusion_retrieval(query, user_id, kb_id)
+        ranked_docs = rerank(query, relevant_docs)
+        return ranked_docs
+
+
+    async def fusion_retrieval(self, query: str, user_id: int, kb_id: int, alpha: float = 0.5,  # Bigger alpha means more weight to vector similarity search
                                k: int = 20) -> List[str]:
         kb = self.kb_repo.get_by_id(kb_id)
         docs_list = kb.documents
