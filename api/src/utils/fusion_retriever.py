@@ -14,7 +14,7 @@ class FusionRetriever(BaseRetriever):
     kb_id: int
 
     def _get_relevant_documents(self, query: str, *, run_manager: CallbackManagerForRetrieverRun) -> list[Document]:
-        doc_list = asyncio.run(self.retriever_service.fusion_retrieval(query, self.user_id, self.kb_id))
+        doc_list = asyncio.run(self.retriever_service.query_kb(query, self.user_id, self.kb_id))
         return self.map_strings_to_documents(doc_list)
 
     def map_strings_to_documents(self, docs: List[str]) -> List[Document]:

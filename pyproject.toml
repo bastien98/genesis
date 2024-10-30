@@ -27,6 +27,7 @@ mysql-connector-python = "^9.1.0"
 python-multipart = "^0.0.16"
 
 #pip install llama-parse ( does not work with poetry atm)
+sentence-transformers = "^3.2.1"
 
 
 [build-system]
