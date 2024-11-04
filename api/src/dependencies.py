@@ -1,11 +1,17 @@
+from anthropic import AsyncAnthropic
 from fastapi import Depends
+from instructor import AsyncInstructor, patch, Mode
+from ollama import AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
 from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
 from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
+from infra.context.adapters.ollama_context_generator import OllamaAdapter
+from infra.context.adapters.anthropic_context_generator import AnthropicAdapter
 from infra.storage.adapters.local_location_adapter import LocalLocationAdapter
+from ports.context_model_port import ContextGeneratorPort
 from ports.document_repository_port import DocumentRepositoryPort
 from ports.knowledge_base_repository_port import KnowledgeBaseRepositoryPort
 from ports.user_repository_port import UserRepositoryPort
@@ -142,8 +148,23 @@ def get_parser():
     return Parser()
 
 
-def get_context_service():
-    return ContextService()
+def get_ollama_context_generator_adapter():
+    return OllamaAdapter(client = AsyncClient())
+
+def get_anthropic_context_generator_adapter():
+    return AnthropicAdapter(client = AsyncInstructor(
+                                        client=AsyncAnthropic(),
+                                        create=patch(
+                                            create=AsyncAnthropic().beta.prompt_caching.messages.create,
+                                            mode=Mode.ANTHROPIC_TOOLS,
+                                        ),
+                                        mode=Mode.ANTHROPIC_TOOLS,
+                                    ))
+
+def get_context_service(
+        adapter: ContextGeneratorPort = Depends(get_anthropic_context_generator_adapter)
+):
+    return ContextService(adapter)
 
 
 def get_bm25_service(
