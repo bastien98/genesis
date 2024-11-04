@@ -31,3 +31,5 @@ data/
 config/
 /.env
 /qodana.yaml
+
+.DS_Store
