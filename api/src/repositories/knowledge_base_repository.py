@@ -18,3 +18,6 @@ class KnowledgeBaseRepository:
 
     def delete(self, kb_id: int) -> None:
         self.kb_repo_adapter.delete(kb_id)
+
+    def get_all_kb_for_user(self, user_id: int) ->  list[KnowledgeBase]:
+        return self.kb_repo_adapter.get_all_kb_for_user(user_id)

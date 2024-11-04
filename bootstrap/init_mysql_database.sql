@@ -40,6 +40,8 @@ CREATE TABLE documents
 INSERT INTO users (username) VALUES ('bastien');
 
 INSERT INTO knowledge_bases (user_id, name) VALUES (1, 'kb-test');
+INSERT INTO knowledge_bases (user_id, name) VALUES (1, 'kb-test-2');
+
 
 -- Query data to verify insertion
 SELECT * FROM users;
