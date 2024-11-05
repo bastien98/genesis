@@ -1,9 +1,9 @@
 from ollama import AsyncClient
 
-from ports.context_model_port import ContextGeneratorPort
+from ports.context_generator_port import ContextGeneratorPort
 
 
-class OllamaAdapter(ContextGeneratorPort):
+class OllamaContextAdapter(ContextGeneratorPort):
     def __init__(self, client : AsyncClient):
         self.client = client
 

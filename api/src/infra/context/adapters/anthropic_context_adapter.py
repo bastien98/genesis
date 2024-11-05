@@ -2,13 +2,13 @@ from anthropic import AsyncAnthropic, BaseModel
 from instructor import AsyncInstructor, patch, Mode
 from pydantic import Field
 
-from ports.context_model_port import ContextGeneratorPort
+from ports.context_generator_port import ContextGeneratorPort
 
 class SituatedContext(BaseModel):
     title: str = Field(..., description="The title of the document.")
     context: str = Field(..., description="The context to situate the chunk within the document.")
 
-class AnthropicAdapter(ContextGeneratorPort):
+class AnthropicContextAdapter(ContextGeneratorPort):
     def __init__(self, client: AsyncInstructor):
         self.client = client
 

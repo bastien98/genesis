@@ -8,10 +8,10 @@ from sqlalchemy.orm import sessionmaker
 from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
 from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
 from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
-from infra.context.adapters.ollama_context_generator import OllamaAdapter
-from infra.context.adapters.anthropic_context_generator import AnthropicAdapter
+from infra.context.adapters.ollama_context_generator import OllamaContextAdapter
+from infra.context.adapters.anthropic_context_adapter import AnthropicContextAdapter
 from infra.storage.adapters.local_location_adapter import LocalLocationAdapter
-from ports.context_model_port import ContextGeneratorPort
+from ports.context_generator_port import ContextGeneratorPort
 from ports.document_repository_port import DocumentRepositoryPort
 from ports.knowledge_base_repository_port import KnowledgeBaseRepositoryPort
 from ports.user_repository_port import UserRepositoryPort
@@ -149,10 +149,10 @@ def get_parser():
 
 
 def get_ollama_context_generator_adapter():
-    return OllamaAdapter(client = AsyncClient())
+    return OllamaContextAdapter(client = AsyncClient())
 
 def get_anthropic_context_generator_adapter():
-    return AnthropicAdapter(client = AsyncInstructor(
+    return AnthropicContextAdapter(client = AsyncInstructor(
                                         client=AsyncAnthropic(),
                                         create=patch(
                                             create=AsyncAnthropic().beta.prompt_caching.messages.create,
@@ -162,7 +162,7 @@ def get_anthropic_context_generator_adapter():
                                     ))
 
 def get_context_service(
-        adapter: ContextGeneratorPort = Depends(get_anthropic_context_generator_adapter)
+        adapter: ContextGeneratorPort = Depends(get_ollama_context_generator_adapter)
 ):
     return ContextService(adapter)
 

@@ -4,7 +4,7 @@ from typing import List, Dict
 
 from pydantic import BaseModel, Field
 
-from ports.context_model_port import ContextGeneratorPort
+from ports.context_generator_port import ContextGeneratorPort
 
 
 class ContextService:
