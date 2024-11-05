@@ -72,7 +72,10 @@ class RetrieverService:
         vector_scores = np.array([score for _, score in sorted_documents])
         vector_scores = 1 - (vector_scores - np.min(vector_scores)) / (np.max(vector_scores) - np.min(vector_scores))
 
-        bm25_scores = (bm25_scores - np.min(bm25_scores)) / (np.max(bm25_scores) - np.min(bm25_scores))
+        if np.max(bm25_scores) == np.min(bm25_scores):
+            bm25_scores = np.zeros_like(bm25_scores)  # Set all scores to zero if there's no variation
+        else:
+            bm25_scores = (bm25_scores - np.min(bm25_scores)) / (np.max(bm25_scores) - np.min(bm25_scores))
 
         # Combine scores
         combined_scores = alpha * vector_scores + (1 - alpha) * bm25_scores

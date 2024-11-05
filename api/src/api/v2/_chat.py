@@ -4,6 +4,7 @@ from langchain_openai import ChatOpenAI
 from dependencies import get_knowledge_base_service, get_retriever_service, LLM
 from services.knowledge_base_service import KnowledgeBaseService
 from services.retriever_service import RetrieverService
+from utils.Agent import KbAgent
 from utils.fusion_retriever import FusionRetriever
 from utils.rag_chain import RagChain
 
@@ -19,6 +20,9 @@ async def chat(
 
 ):
     fusion = FusionRetriever(retriever_service=retriever_service, user_id=user_id, kb_id=kb_id)
-    rag_chain = RagChain(LLM).create_rag_chain(fusion)
-    results = rag_chain.invoke({"input": query})
-    return {"answer": results["answer"]}
+    # rag_chain = RagChain(LLM).create_rag_chain(fusion)
+    # results = rag_chain.invoke({"input": query})
+    agent = KbAgent(LLM, fusion)
+    response = agent.execute_agent(query)
+    print("")
+    # return {"answer": response["answer"]}
