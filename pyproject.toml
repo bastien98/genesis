@@ -31,6 +31,7 @@ sentence-transformers = "^3.2.1"
 faker = "^30.8.2"
 reportlab = "^4.2.5"
 ollama = "^0.3.3"
+python-socketio = "^5.11.4"
 
 
 [build-system]

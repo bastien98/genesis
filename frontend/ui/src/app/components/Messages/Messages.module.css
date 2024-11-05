@@ -1,0 +1,167 @@
+.messages {
+    width: 730px;
+    height: 70%;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-y: auto;
+    padding-bottom: 1rem;
+}
+
+.botMessage {
+    width: 100%;
+    position: relative;
+}
+
+.botMessage .message {
+    --s: 1.5em;
+    /* triangle size */
+    --r: 1em;
+    /* the radius */
+    width: fit-content;
+    padding: 1rem;
+    /* border: var(--s) solid #0000; */
+    border-radius: calc(var(--r) + var(--s));
+    border-bottom-left-radius: 0;
+    /* background: border-box var(--secondary); */
+    /* the coloration */
+    mask: radial-gradient(100% 100% at 100% 100%, #0000 99%, #000 102%) var(--s) 100% / var(--s) var(--s) no-repeat border-box,
+        linear-gradient(#000 0 0) padding-box;
+    max-width: 80%;
+}
+
+.botMessage .message div {
+    position: relative;
+    display: block;
+    width: 100%;
+    z-index: 10;
+    white-space: pre-line;
+}
+
+.botMessage .messageMetaData {
+    position: absolute;
+    bottom: 2px;
+    left: calc(40px + 2rem);
+    font-size: 0.8rem;
+    color: var(--dull-text-color);
+    font-weight: 600;
+}
+
+@media screen and (max-width: 456px) {
+    .botMessage .message {
+        max-width: 100%;
+    }
+}
+
+.botMessage .messageBoxShadow {
+    width: fit-content;
+    /* filter: drop-shadow(0px 0px 1px var(--contrast-opacity-40)); */
+    position: relative;
+}
+
+.botMessage .message {
+    width: calc(147px + fit-content);
+    position: relative;
+    background: transparent;
+    /* padding: 1rem; */
+    border-radius: 0px;
+    border-top-left-radius: 25px;
+    border-top-right-radius: 25px;
+    border-bottom-left-radius: 25px;
+    white-space: pre-line;
+    max-width: 80%;
+}
+
+.botMessage .pfp {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-opacity-10);
+    position: absolute;
+    top: 35px;
+    left: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.botMessage .message {
+    max-width: 256ch;
+}
+
+.botMessage .message {
+    border: var(--s) solid #0000;
+    border-radius: calc(var(--r) + var(--s));
+    border-bottom-left-radius: 0;
+    background: var(--background);
+    margin-left: 2rem;
+}
+
+.userMessage {
+    padding: 1rem;
+    align-self: flex-end;
+    width: 100%;
+    position: relative;
+}
+
+.userMessage .message {
+    width: fit-content;
+    padding: 1rem;
+    border-radius: calc(var(--r) + var(--s));
+    border-bottom-right-radius: 0;
+    background: border-box var(--form-color);
+    max-width: 80%;
+    margin-left: auto;
+    border-radius: 25px;
+}
+
+.userMessage .message div {
+    position: relative;
+    display: block;
+    width: 100%;
+    z-index: 10;
+    white-space: pre-line;
+}
+
+.userMessage .messageMetaData {
+    position: absolute;
+    bottom: 2px;
+    right: calc(40px + 3rem);
+    font-size: 0.8rem;
+    color: var(--dull-text-color);
+    font-weight: 600;
+    min-width: 150px;
+    text-align: right;
+}
+
+.userMessage .pfp {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0px;
+    right: 20px;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userMessage .pfp img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border-color);
+}
+
+@media screen and (max-width: 456px) {
+    .userMessage .message {
+        max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .messages {
+        width: 90%;
+    }
+}
