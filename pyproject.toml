@@ -29,6 +29,8 @@ python-multipart = "^0.0.16"
 #pip install llama-parse ( does not work with poetry atm)
 sentence-transformers = "^3.2.1"
 langgraph = "^0.2.45"
+ollama = "^0.3.3"
+python-socketio = "^5.11.4"
 
 
 [build-system]

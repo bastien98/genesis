@@ -1,0 +1,81 @@
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    background-color: var(--secondary);
+    border-right: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.sidebar .sidebarHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+.sidebar .sidebarHeader button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+.sidebar .sidebarChats {
+    display: flex;
+    height: 100%;
+    overflow-y: auto;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.sidebar .sidebarChats>div {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sidebar .sidebarChats .sidebarTimeCategory {
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.sidebar .sidebarChats .sidebarChat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 0.25rem;
+}
+
+.sidebar .sidebarChats .sidebarChat:hover {
+    background-color: var(--background);
+}
+
+.sidebar .sidebarChats .sidebarChat button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sidebar .sidebarChats .sidebarChat p {
+    width: 90%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.sidebar.sidebarCollapsed {
+    width: 72px;
+}
+
+@media screen and (max-width: 768px) {
+}

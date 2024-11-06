@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from typing import Optional
+from typing import Optional, List
 from domain.entities.knowledge_base import KnowledgeBase
 from domain.entities.document import Document
 from infra.mysql.dtos import KnowledgeBaseDTO
@@ -49,3 +49,8 @@ class MySQLKbAdapter(KnowledgeBaseRepositoryPort):
             documents.append(document)
         kb = KnowledgeBase(kb_id=kb_dto.kb_id, name=kb_dto.name, documents=documents)
         return kb
+
+    def get_all_kb_for_user(self, user_id: int) -> List[KnowledgeBase]:
+        kb_dtos = self.session.query(KnowledgeBaseDTO).filter_by(user_id=user_id).all()
+        knowledge_bases = [self._dto_to_entity(kb_dto) for kb_dto in kb_dtos]
+        return knowledge_bases
