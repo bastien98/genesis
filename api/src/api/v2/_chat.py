@@ -1,12 +1,8 @@
 from fastapi import APIRouter, Query, Form, Depends
-from langchain_openai import ChatOpenAI
-
-from dependencies import get_knowledge_base_service, get_retriever_service, LLM
-from services.knowledge_base_service import KnowledgeBaseService
+from dependencies import get_retriever_service, LLM
 from services.retriever_service import RetrieverService
 from utils.agent import KbAgent
 from utils.fusion_retriever import FusionRetriever
-from utils.rag_chain import RagChain
 
 router = APIRouter()
 
