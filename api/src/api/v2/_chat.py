@@ -15,8 +15,8 @@ async def chat(
         retriever_service: RetrieverService = Depends(get_retriever_service)
 
 ):
-    fusion_retriever = FusionRetriever(retriever_service=retriever_service, user_id=user_id, kb_id=kb_id)
-    agent = KbAgent(LLM, fusion_retriever)
+    fusion_retriever_for_kb = FusionRetriever(retriever_service=retriever_service, user_id=user_id, kb_id=kb_id)
+    agent = KbAgent(LLM, fusion_retriever_for_kb)
     response = agent.execute_agent(None, query)
     print("")
     return {"answer": response.get("messages")[-1].content}
