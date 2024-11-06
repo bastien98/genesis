@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "super-rag"
+name = "genesis"
 version = "0.1.0"
 description = ""
 authors = ["Bastien98 <bastien.moenaert@gmail.com>"]

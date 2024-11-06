@@ -1,7 +1,7 @@
 -- Drop existing database if it exists and create a new one
-DROP DATABASE IF EXISTS super_rag;
-CREATE DATABASE super_rag;
-USE super_rag;
+DROP DATABASE IF EXISTS genesis;
+CREATE DATABASE genesis;
+USE genesis;
 
 -- Create users table
 CREATE TABLE users
