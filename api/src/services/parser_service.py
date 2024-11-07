@@ -1,5 +1,5 @@
-from api.src.domain.entities.raw_document import RawDocument
-from api.src.ports.parse_to_markdown_port import ParseToMarkdownPort
+from domain.entities.raw_document import RawDocument
+from ports.parse_to_markdown_port import ParseToMarkdownPort
 
 
 class ParserService:
@@ -9,3 +9,6 @@ class ParserService:
 
     async def parse_to_markdown(self, doc: RawDocument) -> tuple[str, list[str]]:
         return await self.markdown_adapter.parse_to_markdown(doc)
+
+    def parse_to_text(self, content: bytes) -> tuple[str, list[str]]:
+        return self.text_adapter.parse_to_text(content)

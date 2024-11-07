@@ -11,7 +11,7 @@ from services.file_storage_service import FileStorageService
 from services.location_service import LocationService
 from services.retriever_service import RetrieverService
 from services.vector_db_service import VectorDbService
-from utils.parser import Parser
+from services.parser_service import ParserService
 
 
 class KnowledgeBaseService:
@@ -19,7 +19,7 @@ class KnowledgeBaseService:
             self,
             file_storage_service: FileStorageService,
             vector_db_service: VectorDbService,
-            parser: Parser,
+            parser_service: ParserService,
             context_service: ContextService,
             location_service: LocationService,
             bm25_service: Bm25Service,
@@ -30,7 +30,7 @@ class KnowledgeBaseService:
     ):
         self.file_storage_service = file_storage_service
         self.vector_db_service = vector_db_service
-        self.parser = parser
+        self.parser_service = parser_service
         self.context_service = context_service
         self.location_service = location_service
         self.bm25_service = bm25_service
@@ -56,10 +56,10 @@ class KnowledgeBaseService:
         self.file_storage_service.save_raw_document(raw_doc, raw_doc_path)
 
         # Parse the byte content to text and return full text and page list
-        full_text, text_chunks = self.parser.parse_to_text(raw_doc.content)
+        full_text, text_chunks = self.parser_service.parse_to_text(raw_doc.content)
 
         # Parse the byte content to Markdown text and return full text and page list
-        full_md_text, md_chunks = await self.parser.parse_to_markdown(raw_doc)
+        full_md_text, md_chunks = await self.parser_service.parse_to_markdown(raw_doc)
 
         # Add context to chunks
         print("Adding context to text chunks")
