@@ -5,6 +5,11 @@ from ollama import AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from api.src.infra.parser.adapters.llama_parse_adapter import LlamaParseAdapter
+from api.src.infra.parser.adapters.mineru_adapter import MineruAdapter
+from api.src.ports.parse_to_markdown_port import ParseToMarkdownPort
+from api.src.ports.parse_to_text_port import ParseToTextPort
+from api.src.services.parser_service import ParserService
 from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
 from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
 from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
@@ -143,6 +148,14 @@ def get_user_repository(
 ):
     return UserRepository(adapter)
 
+def get_llama_parse_adapter():
+    return LlamaParseAdapter()
+
+def get_mineru_adapter():
+    return MineruAdapter()
+
+def get_local_txt_parser_adapter():
+    return LocalTxtParserAdapter()
 
 def get_parser():
     return Parser()
@@ -166,6 +179,11 @@ def get_context_service(
 ):
     return ContextService(adapter)
 
+def get_parser_service(
+        md_adapter: ParseToMarkdownPort=Depends(get_llama_parse_adapter),
+        txt_adapter: ParseToTextPort=Depends(get_local_txt_parser_adapter)
+):
+    return ParserService(md_adapter, txt_adapter)
 
 def get_bm25_service(
         location_service: LocationService = Depends(get_location_service),
