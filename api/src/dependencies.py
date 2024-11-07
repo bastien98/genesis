@@ -177,7 +177,7 @@ def get_context_service(
     return ContextService(adapter)
 
 def get_parser_service(
-        md_adapter: ParseToMarkdownPort=Depends(get_mineru_adapter),
+        md_adapter: ParseToMarkdownPort=Depends(get_llama_parse_adapter),
         txt_adapter: ParseToTextPort=Depends(get_local_txt_parser_adapter)
 ):
     return ParserService(md_adapter, txt_adapter)
