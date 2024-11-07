@@ -5,6 +5,12 @@ from ollama import AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from infra.parser.adapters.llama_parse_adapter import LlamaParseAdapter
+from infra.parser.adapters.local_txt_parser_adapter import LocalTxtParserAdapter
+from infra.parser.adapters.mineru_adapter import MineruAdapter
+from ports.parse_to_markdown_port import ParseToMarkdownPort
+from ports.parse_to_text_port import ParseToTextPort
+from services.parser_service import ParserService
 from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
 from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
 from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
@@ -25,7 +31,6 @@ from services.knowledge_base_service import KnowledgeBaseService
 from services.location_service import LocationService
 from services.retriever_service import RetrieverService
 from services.vector_db_service import VectorDbService
-from utils.parser import Parser
 from infra.embeddings.adapters.openai_embeddings import OpenAIEmbeddingsClient
 from infra.storage.adapters.local_storage_adapter import LocalFileStorageAdapter
 import json
@@ -143,9 +148,14 @@ def get_user_repository(
 ):
     return UserRepository(adapter)
 
+def get_llama_parse_adapter():
+    return LlamaParseAdapter()
 
-def get_parser():
-    return Parser()
+def get_mineru_adapter():
+    return MineruAdapter()
+
+def get_local_txt_parser_adapter():
+    return LocalTxtParserAdapter()
 
 
 def get_ollama_context_generator_adapter():
@@ -166,6 +176,11 @@ def get_context_service(
 ):
     return ContextService(adapter)
 
+def get_parser_service(
+        md_adapter: ParseToMarkdownPort=Depends(get_llama_parse_adapter),
+        txt_adapter: ParseToTextPort=Depends(get_local_txt_parser_adapter)
+):
+    return ParserService(md_adapter, txt_adapter)
 
 def get_bm25_service(
         location_service: LocationService = Depends(get_location_service),
@@ -187,7 +202,7 @@ def get_knowledge_base_service(
         file_storage_service: FileStorageService = Depends(get_file_storage_service),
         vector_db_service: VectorDbService = Depends(get_vector_db_service),
         user_repository: UserRepository = Depends(get_user_repository),
-        parser: Parser = Depends(get_parser),
+        parser_service: ParserService = Depends(get_parser_service),
         context_service: ContextService = Depends(get_context_service),
         location_service=Depends(get_location_service),
         bm25_service: Bm25Service = Depends(get_bm25_service),
@@ -198,7 +213,7 @@ def get_knowledge_base_service(
     return KnowledgeBaseService(
         file_storage_service,
         vector_db_service,
-        parser,
+        parser_service,
         context_service,
         location_service,
         bm25_service,
