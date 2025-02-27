@@ -5,6 +5,7 @@ from ollama import AsyncClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
+from infra.mysql.adapters.mysql_chat_adapter import MySQLChatAdapter
 from infra.mysql.adapters.mysql_document_adapter import MySQLDocumentAdapter
 from infra.mysql.adapters.mysql_knowledge_base_adapter import MySQLKbAdapter
 from infra.mysql.adapters.mysql_user_adapter import MySQLUserAdapter
@@ -18,6 +19,7 @@ from ports.user_repository_port import UserRepositoryPort
 from repositories.document_repository import DocumentRepository
 from repositories.knowledge_base_repository import KnowledgeBaseRepository
 from repositories.user_repository import UserRepository
+from services.chat_service import ChatService
 from services.context_service import ContextService
 from services.file_storage_service import FileStorageService
 from services.bm25_service import Bm25Service
@@ -149,20 +151,22 @@ def get_parser():
 
 
 def get_ollama_context_generator_adapter():
-    return OllamaContextAdapter(client = AsyncClient())
+    return OllamaContextAdapter(client=AsyncClient())
+
 
 def get_anthropic_context_generator_adapter():
-    return AnthropicContextAdapter(client = AsyncInstructor(
-                                        client=AsyncAnthropic(),
-                                        create=patch(
-                                            create=AsyncAnthropic().beta.prompt_caching.messages.create,
-                                            mode=Mode.ANTHROPIC_TOOLS,
-                                        ),
-                                        mode=Mode.ANTHROPIC_TOOLS,
-                                    ))
+    return AnthropicContextAdapter(client=AsyncInstructor(
+        client=AsyncAnthropic(),
+        create=patch(
+            create=AsyncAnthropic().beta.prompt_caching.messages.create,
+            mode=Mode.ANTHROPIC_TOOLS,
+        ),
+        mode=Mode.ANTHROPIC_TOOLS,
+    ))
+
 
 def get_context_service(
-        adapter: ContextGeneratorPort = Depends(get_ollama_context_generator_adapter)
+        adapter: ContextGeneratorPort = Depends(get_anthropic_context_generator_adapter)
 ):
     return ContextService(adapter)
 
@@ -207,3 +211,7 @@ def get_knowledge_base_service(
         document_repo,
         retriever_service
     )
+
+
+def get_chat_service() -> ChatService:
+    return ChatService(MySQLChatAdapter(session))

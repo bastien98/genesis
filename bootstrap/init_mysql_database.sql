@@ -36,18 +36,43 @@ CREATE TABLE documents
     INDEX (kb_id)
 );
 
--- Insert initial data: one user and one knowledge base
+-- Insert initial data: one user and two knowledge bases
 INSERT INTO users (username) VALUES ('bastien');
 
 INSERT INTO knowledge_bases (user_id, name) VALUES (1, 'kb-test');
 INSERT INTO knowledge_bases (user_id, name) VALUES (1, 'kb-test-2');
-
 
 -- Query data to verify insertion
 SELECT * FROM users;
 SELECT * FROM knowledge_bases;
 SELECT * FROM documents;
 
--- dev queries
+-- Dev query
 DELETE FROM documents
 WHERE doc_id = 7;
+
+-------------------------------------------------------
+-- Chat App Tables
+-------------------------------------------------------
+
+-- Create threads table for chat threads
+CREATE TABLE threads
+(
+    thread_id   INT AUTO_INCREMENT PRIMARY KEY,
+    user_id     INT NOT NULL,
+    thread_title VARCHAR(255) DEFAULT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    INDEX (user_id)
+);
+
+-- Create messages table for chat messages
+CREATE TABLE messages
+(
+    message_id INT AUTO_INCREMENT PRIMARY KEY,
+    thread_id  INT NOT NULL,
+    user_id    INT NOT NULL,
+    message    TEXT NOT NULL,
+    FOREIGN KEY (thread_id) REFERENCES threads(thread_id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id),
+    INDEX (thread_id, user_id)
+);
